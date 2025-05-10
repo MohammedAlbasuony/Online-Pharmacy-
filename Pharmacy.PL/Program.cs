@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Pharmacy.DAL.DB;
+
 namespace Pharmacy.PL
 {
     public class Program
@@ -8,7 +11,9 @@ namespace Pharmacy.PL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
