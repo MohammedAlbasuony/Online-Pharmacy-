@@ -1,0 +1,21 @@
+﻿@model Pharmacy.BLL.ViewModels.MedicineVM.AddMedicineVM
+@{
+    ViewData["Title"] = "Delete Medicine";
+}
+
+<h2>Delete Medicine</h2>
+
+<h4>Are you sure you want to delete this medicine?</h4>
+
+<div>
+    <h5>@Model.Name</h5>
+    <p>Category: @Model.Category</p>
+    <p>Manufacturer: @Model.Manufacturer</p>
+    <p>Price: @Model.Price</p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="MedicineID" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="GetAllMedicine" class="btn btn-secondary">Cancel</a>
+</form>

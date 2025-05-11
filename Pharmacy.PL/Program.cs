@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.BLL.Implementation;
+using Pharmacy.BLL.Service.Abstraction;
+using Pharmacy.BLL.Service.Implementation;
 using Pharmacy.DAL.DB;
 using Pharmacy.DAL.Entity;
+using Pharmacy.DAL.Repo.Abstraction;
+using Pharmacy.DAL.Repo.Implementation;
 
 namespace Pharmacy.PL
 {
@@ -29,6 +33,11 @@ namespace Pharmacy.PL
                 options.Password.RequireLowercase = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IMedicineRepo, MedicineRepo>();
+            builder.Services.AddScoped<IMedicineService, MedicineService>();
 
 
             var app = builder.Build();

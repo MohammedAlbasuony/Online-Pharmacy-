@@ -1,0 +1,41 @@
+﻿@model List<Pharmacy.BLL.ViewModels.MedicineVM.AddMedicineVM>
+@{
+    ViewData["Title"] = "Medicine List";
+}
+
+<h2>Medicine List</h2>
+
+<a asp-action="AddMedicine" class="btn btn-success mb-3">Add New Medicine</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Manufacturer</th>
+            <th>Expiry Date</th>
+            <th>Requires Prescription</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var medicine in Model)
+        {
+            <tr>
+                <td>@medicine.Name</td>
+                <td>@medicine.Category</td>
+                <td>@medicine.Price</td>
+                <td>@medicine.StockQuantity</td>
+                <td>@medicine.Manufacturer</td>
+                <td>@medicine.ExpiryDate.ToShortDateString()</td>
+                <td>@(medicine.RequiresPrescription ? "Yes" : "No")</td>
+                <td>
+                    <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="DeleteMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
