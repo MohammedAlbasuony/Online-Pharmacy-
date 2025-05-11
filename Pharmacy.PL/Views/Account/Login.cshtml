@@ -1,51 +1,72 @@
 ﻿@using Pharmacy.PL.ViewModels
-@model LoginVm;
-
+@model LoginVm
 @{
     ViewData["Title"] = "Login";
-    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+    ViewData["BodyClass"] = "login-page";
 }
 
-<div class="account-container">
-    <div class="account-box">
-        <h2 class="text-center mb-4">Login</h2>
-        <form asp-action="Login" method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-body p-4 p-md-5">
+                        <h3 class="mb-4 text-center">Sign In to Your Account</h3>
+
+                        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i> @ViewBag.ErrorMessage
+                            </div>
+                        }
+
+                        <form asp-action="Login" asp-controller="Account" method="post">
+                            <input type="hidden" />
+
+                            <div class="mb-4">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4 form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                            </div>
+
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+                            </div>
+
+                            <div class="text-center mb-4">
+                                <a href="@Url.Action("ForgotPassword", "Account")" class="text-decoration-none">Forgot Password?</a>
+                            </div>
+
+                            <div class="text-center">
+                                <p>Don't have an account? <a href="@Url.Action("Register", "Account")" class="text-decoration-none">Sign Up</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                
             </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="float-end">
-                <a asp-controller="Account" asp-action="VerifyEmail" class="text-decoration-none">
-                    Forgot password?
-                </a>
-            </div>
-            <div class="form-check mb-3">
-                <label class="form-check-label">
-                    <input asp-for="RememberMe" class="form-check-input" />
-                    @Html.DisplayNameFor(a => a.RememberMe)
-                </label>
-            </div>
-            <input type="submit" value="Login" class="btn btn-success w-100 p-2" />
-            <p class="text-center mt-2">
-                Don't have an account? <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register</a>
-            </p>
-            <div class="text-center">
-                <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Pharmacy.BLL\Pharmacy.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Images\img.jpg" />
+  </ItemGroup>
+
 </Project>
