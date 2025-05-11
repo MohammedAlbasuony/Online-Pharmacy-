@@ -5,34 +5,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Pharmacy.PL</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Pharmacy.PL.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
+    @* <link rel="stylesheet" href="~/Pharmacy.PL.styles.css" asp-append-version="true" /> *@
+    @* <link rel="stylesheet" href="~" asp-append-version="true" /> *@
+    <!-- Favicons -->
+    <link href="~/assets/img/favicon.png" rel="icon">
+    <link href="~/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="~/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="~/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="~/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="~/assets/css/main.css" rel="stylesheet">
+
+    <!-- Additional CSS -->
+    <link href="~/css/site.css" rel="stylesheet">
 
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Pharmacy.PL</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <partial name="_LoginPartial" />
-                    </ul>
+<body class="@ViewData["BodyClass"]">
+    
+    <header id="header" class="header sticky-top">
+
+        <div class="topbar d-flex align-items-center">
+            <div class="container d-flex justify-content-center justify-content-md-between">
+                <div class="d-none d-md-flex align-items-center">
+                    <i class="bi bi-clock me-1"></i> Monday - Saturday, 8AM to 10PM
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-phone me-1"></i> Call us now +1 5589 55488 55
                 </div>
             </div>
-        </nav>
+        </div><!-- End Top Bar -->
+
+        <div class="branding d-flex align-items-center">
+            <div class="container position-relative d-flex align-items-center justify-content-end">
+                <a href="@Url.Action("Index", "Home")" class="logo d-flex align-items-center me-auto">
+                    <img src="~/assets/img/logo.png" alt="">
+                    <h1 class="sitename">PharmaCare</h1>
+                </a>
+
+                <nav id="navmenu" class="navmenu">
+                    <ul>
+                        <li><a href="@Url.Action("Index", "Home")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">Home</a></li>
+
+                        @if (User.IsInRole("Doctor"))
+                        {
+                            <li><a href="@Url.Action("Index", "Doctor")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Doctor" ? "active" : "")">Dashboard</a></li>
+                            <li><a href="@Url.Action("Patients", "Doctor")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Patients" ? "active" : "")">Patients</a></li>
+                            <li><a href="@Url.Action("Prescriptions", "Doctor")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Prescriptions" ? "active" : "")">Prescriptions</a></li>
+                        }
+
+                        @if (User.IsInRole("Patient"))
+                        {
+                            <li><a href="@Url.Action("Index", "Patient")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Patient" ? "active" : "")">Dashboard</a></li>
+                            <li><a href="@Url.Action("Prescriptions", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Prescriptions" ? "active" : "")">My Prescriptions</a></li>
+                            <li><a href="@Url.Action("Orders", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">My Orders</a></li>
+                        }
+
+                        @if (User.IsInRole("Pharmacist"))
+                        {
+                            <li><a href="@Url.Action("Index", "Pharmacist")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Pharmacist" ? "active" : "")">Dashboard</a></li>
+                            <li><a href="@Url.Action("Inventory", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Inventory" ? "active" : "")">Inventory</a></li>
+                            <li><a href="@Url.Action("Orders", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">Orders</a></li>
+                        }
+
+                        <li><a href="#About" class="@(ViewContext.RouteData.Values["action"].ToString() == "About" ? "active" : "")">About</a></li>
+                        <li><a href="#Contact" class="@(ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")">Contact</a></li>
+                        
+                       
+                            <div class="d-flex align-items-center me-3">
+                                <a href="@Url.Action("Index", "Cart")" class="position-relative text-decoration-none">
+                                    <i class="fas fa-shopping-cart fs-5"></i>
+                                    @if (ViewBag.CartItemCount > 0)
+                                    {
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            @ViewBag.CartItemCount
+                                            <span class="visually-hidden">items in cart</span>
+                                        </span>
+                                    }
+                                </a>
+                            </div>
+                        
+                    </ul>
+                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                </nav>
+
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <a class="cta-btn" href="@Url.Action("Login", "Account")">Login</a>
+                }
+                else
+                {
+                    <div class="dropdown">
+                        <button class="cta-btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i> @User.Identity.Name
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form id="logoutForm" class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -40,14 +131,88 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Pharmacy.PL - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer id="footer" class="footer light-background">
+        <div class="container footer-top">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6 footer-about">
+                    <a href="@Url.Action("Index", "Home")" class="logo d-flex align-items-center">
+                        <span class="sitename">PharmaCare</span>
+                    </a>
+                    <div class="footer-contact pt-3">
+                        <p>123 Pharmacy Street</p>
+                        <p>New York, NY 10001</p>
+                        <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
+                        <p><strong>Email:</strong> <span>info@pharmacare.com</span></p>
+                    </div>
+                    <div class="social-links d-flex mt-4">
+                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Useful Links</h4>
+                    <ul>
+                        <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li><a href="@Url.Action("About", "Home")">About us</a></li>
+                        <li><a href="@Url.Action("Services", "Home")">Services</a></li>
+                        <li><a href="@Url.Action("Terms", "Home")">Terms of service</a></li>
+                        <li><a href="@Url.Action("Privacy", "Home")">Privacy policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Our Services</h4>
+                    <ul>
+                        <li><a href="#">Prescription Filling</a></li>
+                        <li><a href="#">Medication Delivery</a></li>
+                        <li><a href="#">Health Consultations</a></li>
+                        <li><a href="#">Refill Reminders</a></li>
+                        <li><a href="#">Health Products</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-6 footer-links">
+                    <h4>Subscribe to Our Newsletter</h4>
+                    <p>Stay updated with our latest health tips and medication information</p>
+                    <form action="#" method="post">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email" aria-label="Your Email" aria-describedby="button-addon2">
+                            <button class="btn btn-outline-primary" type="button" id="button-addon2">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container copyright text-center mt-4">
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">PharmaCare</strong> <span>All Rights Reserved</span></p>
+            <div class="credits">
+                @DateTime.Now.Year - Online Pharmacy System
+            </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <!-- Vendor JS Files -->
+    <script src="~/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/vendor/php-email-form/validate.js"></script>
+    <script src="~/assets/vendor/aos/aos.js"></script>
+    <script src="~/assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="~/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="~/assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="~/assets/js/main.js"></script>
+
+    <!-- Additional Scripts -->
+    <script src="~/js/site.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

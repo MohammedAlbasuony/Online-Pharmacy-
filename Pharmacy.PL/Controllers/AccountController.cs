@@ -33,7 +33,7 @@ namespace Pharmacy.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PatientRegister(RegisterVm model)
+        public async Task<IActionResult> Register(RegisterVm model)
         {
             //begin transaction  
             //first save type of user (doctor , pa ,)
