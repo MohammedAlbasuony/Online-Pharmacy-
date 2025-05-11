@@ -15,14 +15,14 @@ namespace Pharmacy.DAL.DB
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-        //public DbSet<Doctor> Doctors { get; set; }
-        //public DbSet<Patient> Patients { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Patient> Patients { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<Medicine> Medicines { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<ManualReview> ManualReviews { get; set; }
-        //public DbSet<Pharmacist> Pharmacists { get; set; }
+        public DbSet<Pharmacist> Pharmacists { get; set; }
         public DbSet<PatientManagement> PatientManagements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

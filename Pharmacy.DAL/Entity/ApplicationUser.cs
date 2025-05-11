@@ -9,14 +9,15 @@ namespace Pharmacy.DAL.Entity
 {
     public class ApplicationUser: IdentityUser
     {
-
         public string? FullName { get; set; }
-        public string? LicenseNumber { get; set; } // For doctors and pharmacists
-        public string ?Specialization { get; set; } // For doctors
-        // Navigation properties
-        public virtual ICollection<Prescription>? Prescriptions { get; set; }
-        public virtual ICollection<Order>? Orders { get; set; }
-        public ICollection<Payment>? Payments { get; set; }
+        public EnUserType UserType { get; set; } 
+        public int UserTypeID { get; set; } // Foreign key for UserType
+    }
 
+    public enum EnUserType
+    {
+        Doctor =1,
+        Pharmacist =2,
+        Patient =3
     }
 }

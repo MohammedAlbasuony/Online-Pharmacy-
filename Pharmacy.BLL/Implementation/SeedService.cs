@@ -46,9 +46,7 @@ namespace Pharmacy.BLL.Implementation
                     {
                         FullName = "Code Hub",
                         UserName = adminEmail,
-                        NormalizedUserName = adminEmail.ToUpper(),
                         Email = adminEmail,
-                        NormalizedEmail = adminEmail.ToUpper(),
                         EmailConfirmed = true,
                         SecurityStamp = Guid.NewGuid().ToString()
                     };

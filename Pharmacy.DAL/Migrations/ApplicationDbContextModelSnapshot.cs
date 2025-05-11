@@ -177,9 +177,6 @@ namespace Pharmacy.DAL.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LicenseNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -206,15 +203,18 @@ namespace Pharmacy.DAL.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Specialization")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("UserType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserTypeID")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -237,10 +237,6 @@ namespace Pharmacy.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorID"));
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LicenseNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -249,20 +245,13 @@ namespace Pharmacy.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PhoneNumber")
-                        .HasColumnType("int");
-
                     b.Property<string>("Specialization")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DoctorID");
 
-                    b.ToTable("Doctor");
+                    b.ToTable("Doctors");
                 });
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.ManualReview", b =>
@@ -328,9 +317,6 @@ namespace Pharmacy.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("MedicineID")
                         .HasColumnType("int");
 
@@ -352,8 +338,6 @@ namespace Pharmacy.DAL.Migrations
 
                     b.HasKey("OrderID");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("MedicineID");
 
                     b.HasIndex("PatientID");
@@ -369,14 +353,6 @@ namespace Pharmacy.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientID"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("MedicalHistory")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -385,16 +361,9 @@ namespace Pharmacy.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PhoneNumber")
-                        .HasColumnType("int");
-
                     b.HasKey("PatientID");
 
-                    b.ToTable("Patient");
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.PatientManagement", b =>
@@ -423,9 +392,6 @@ namespace Pharmacy.DAL.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
 
@@ -442,14 +408,33 @@ namespace Pharmacy.DAL.Migrations
 
                     b.HasKey("PaymentID");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("OrderID")
                         .IsUnique();
 
                     b.HasIndex("PatientID");
 
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("Pharmacy.DAL.Entity.Pharmacist", b =>
+                {
+                    b.Property<int>("PharmacistID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PharmacistID"));
+
+                    b.Property<string>("LicenseNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PharmacistID");
+
+                    b.ToTable("Pharmacists");
                 });
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.Prescription", b =>
@@ -459,9 +444,6 @@ namespace Pharmacy.DAL.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrescriptionID"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("DoctorID")
                         .HasColumnType("int");
@@ -484,8 +466,6 @@ namespace Pharmacy.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PrescriptionID");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("DoctorID");
 
@@ -568,10 +548,6 @@ namespace Pharmacy.DAL.Migrations
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.Order", b =>
                 {
-                    b.HasOne("Pharmacy.DAL.Entity.ApplicationUser", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("Pharmacy.DAL.Entity.Medicine", "Medicine")
                         .WithMany()
                         .HasForeignKey("MedicineID")
@@ -591,10 +567,6 @@ namespace Pharmacy.DAL.Migrations
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.Payment", b =>
                 {
-                    b.HasOne("Pharmacy.DAL.Entity.ApplicationUser", null)
-                        .WithMany("Payments")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("Pharmacy.DAL.Entity.Order", "Order")
                         .WithOne("Payment")
                         .HasForeignKey("Pharmacy.DAL.Entity.Payment", "OrderID")
@@ -614,10 +586,6 @@ namespace Pharmacy.DAL.Migrations
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.Prescription", b =>
                 {
-                    b.HasOne("Pharmacy.DAL.Entity.ApplicationUser", null)
-                        .WithMany("Prescriptions")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("Pharmacy.DAL.Entity.Doctor", "Doctor")
                         .WithMany("Prescriptions")
                         .HasForeignKey("DoctorID")
@@ -641,15 +609,6 @@ namespace Pharmacy.DAL.Migrations
                     b.Navigation("Medicine");
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("Pharmacy.DAL.Entity.ApplicationUser", b =>
-                {
-                    b.Navigation("Orders");
-
-                    b.Navigation("Payments");
-
-                    b.Navigation("Prescriptions");
                 });
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.Doctor", b =>

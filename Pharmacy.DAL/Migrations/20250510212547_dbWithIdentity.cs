@@ -31,8 +31,8 @@ namespace Pharmacy.DAL.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Specialization = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserType = table.Column<int>(type: "int", nullable: false),
+                    UserTypeID = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -54,21 +54,18 @@ namespace Pharmacy.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Doctor",
+                name: "Doctors",
                 columns: table => new
                 {
                     DoctorID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Specialization = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    LicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    LicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Doctor", x => x.DoctorID);
+                    table.PrimaryKey("PK_Doctors", x => x.DoctorID);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,24 +88,6 @@ namespace Pharmacy.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Patient",
-                columns: table => new
-                {
-                    PatientID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MedicalHistory = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Patient", x => x.PatientID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PatientManagements",
                 columns: table => new
                 {
@@ -118,6 +97,34 @@ namespace Pharmacy.DAL.Migrations
                 },
                 constraints: table =>
                 {
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Patients",
+                columns: table => new
+                {
+                    PatientID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MedicalHistory = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Patients", x => x.PatientID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Pharmacists",
+                columns: table => new
+                {
+                    PharmacistID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pharmacists", x => x.PharmacistID);
                 });
 
             migrationBuilder.CreateTable(
@@ -237,17 +244,11 @@ namespace Pharmacy.DAL.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<double>(type: "float", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.OrderID);
-                    table.ForeignKey(
-                        name: "FK_Orders_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_Medicines_MedicineID",
                         column: x => x.MedicineID,
@@ -255,9 +256,9 @@ namespace Pharmacy.DAL.Migrations
                         principalColumn: "MedicineID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Orders_Patient_PatientID",
+                        name: "FK_Orders_Patients_PatientID",
                         column: x => x.PatientID,
-                        principalTable: "Patient",
+                        principalTable: "Patients",
                         principalColumn: "PatientID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -273,21 +274,15 @@ namespace Pharmacy.DAL.Migrations
                     MedicineID = table.Column<int>(type: "int", nullable: false),
                     Dosage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IssueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Prescriptions", x => x.PrescriptionID);
                     table.ForeignKey(
-                        name: "FK_Prescriptions_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Prescriptions_Doctor_DoctorID",
+                        name: "FK_Prescriptions_Doctors_DoctorID",
                         column: x => x.DoctorID,
-                        principalTable: "Doctor",
+                        principalTable: "Doctors",
                         principalColumn: "DoctorID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -297,9 +292,9 @@ namespace Pharmacy.DAL.Migrations
                         principalColumn: "MedicineID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Prescriptions_Patient_PatientID",
+                        name: "FK_Prescriptions_Patients_PatientID",
                         column: x => x.PatientID,
-                        principalTable: "Patient",
+                        principalTable: "Patients",
                         principalColumn: "PatientID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -314,17 +309,11 @@ namespace Pharmacy.DAL.Migrations
                     PatientID = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.PaymentID);
-                    table.ForeignKey(
-                        name: "FK_Payments_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Payments_Orders_OrderID",
                         column: x => x.OrderID,
@@ -332,9 +321,9 @@ namespace Pharmacy.DAL.Migrations
                         principalColumn: "OrderID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Payments_Patient_PatientID",
+                        name: "FK_Payments_Patients_PatientID",
                         column: x => x.PatientID,
-                        principalTable: "Patient",
+                        principalTable: "Patients",
                         principalColumn: "PatientID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -350,9 +339,9 @@ namespace Pharmacy.DAL.Migrations
                 constraints: table =>
                 {
                     table.ForeignKey(
-                        name: "FK_ManualReviews_Patient_PatientID",
+                        name: "FK_ManualReviews_Patients_PatientID",
                         column: x => x.PatientID,
-                        principalTable: "Patient",
+                        principalTable: "Patients",
                         principalColumn: "PatientID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -413,11 +402,6 @@ namespace Pharmacy.DAL.Migrations
                 column: "PrescriptionID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_ApplicationUserId",
-                table: "Orders",
-                column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Orders_MedicineID",
                 table: "Orders",
                 column: "MedicineID");
@@ -426,11 +410,6 @@ namespace Pharmacy.DAL.Migrations
                 name: "IX_Orders_PatientID",
                 table: "Orders",
                 column: "PatientID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_ApplicationUserId",
-                table: "Payments",
-                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_OrderID",
@@ -442,11 +421,6 @@ namespace Pharmacy.DAL.Migrations
                 name: "IX_Payments_PatientID",
                 table: "Payments",
                 column: "PatientID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Prescriptions_ApplicationUserId",
-                table: "Prescriptions",
-                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prescriptions_DoctorID",
@@ -492,7 +466,13 @@ namespace Pharmacy.DAL.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
+                name: "Pharmacists");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Prescriptions");
@@ -501,16 +481,13 @@ namespace Pharmacy.DAL.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Doctor");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Doctors");
 
             migrationBuilder.DropTable(
                 name: "Medicines");
 
             migrationBuilder.DropTable(
-                name: "Patient");
+                name: "Patients");
         }
     }
 }
