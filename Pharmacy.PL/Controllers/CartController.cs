@@ -214,31 +214,33 @@ public class CartController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmAndPay(int orderId)
     {
         var userId = _userManager.GetUserId(User);
-        var patient = await _context.Patients.FirstOrDefaultAsync(p => p.ApplicationUserId == userId);
+
+        // Get the patient associated with this user
+        var patient = await _context.Patients
+            .FirstOrDefaultAsync(p => p.ApplicationUserId == userId);
 
         if (patient == null)
             return BadRequest("Patient not found.");
 
-        var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderID == orderId && o.PatientID == patient.PatientID);
+        // Get the most recent order for the patient
+        var order = await _context.Orders
+            .FirstOrDefaultAsync(o => o.PatientID == patient.PatientID && o.OrderID == orderId);
+
         if (order == null)
-            return NotFound();
+            return RedirectToAction("Index", "Cart");
 
-        // Update order and payment status
+        // Update the order status to "Paid"
         order.Status = "Paid";
-
-        var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderID == orderId);
-        if (payment != null)
-            payment.PaymentStatus = "Paid";
-
+        _context.Orders.Update(order);
         await _context.SaveChangesAsync();
 
-        TempData["Success"] = "Payment completed successfully!";
-        return RedirectToAction("OrderConfirmation");
+        TempData["Success"] = "Payment successful. Your order is now paid!";
+        return RedirectToAction("OrderConfirmation", new { orderId = order.OrderID });
     }
+
 
 
 

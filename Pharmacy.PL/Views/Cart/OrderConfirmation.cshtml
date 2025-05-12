@@ -76,7 +76,7 @@
                             <td>@item.MedicationName</td>
                             <td>@item.Quantity</td>
                             <td>@item.UnitPrice.ToString("C")</td>
-                            <td>@(item.Quantity * item.UnitPrice)</td>
+                            <td>@(item.Quantity * item.UnitPrice).ToString("C")</td>
                         </tr>
                     }
                 </tbody>
@@ -91,9 +91,12 @@
 
         @if (!string.Equals(Model.Order.Status, "Paid", StringComparison.OrdinalIgnoreCase))
         {
-            <a href="@Url.Action("ConfirmAndPay", "Order")" class="btn btn-success">
-                <i class="bi bi-credit-card-fill"></i> Confirm and Pay
-            </a>
+            <form method="post" action="@Url.Action("ConfirmAndPay", "Cart")">
+                <input type="hidden" name="orderId" value="@Model.Order.OrderID" />
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-credit-card-fill"></i> Confirm and Pay
+                </button>
+            </form>
         }
     </div>
 </div>
