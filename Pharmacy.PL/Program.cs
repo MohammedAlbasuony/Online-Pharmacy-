@@ -40,8 +40,8 @@ namespace Pharmacy.PL
             builder.Services.AddScoped<IMedicineService, MedicineService>();
 
 
-            var app = builder.Build();
-
+            builder.Services.AddSession(); // Move this line before builder.Build()  
+            var app = builder.Build();
              SeedService.SeedDatabase(app.Services);
 
             // Configure the HTTP request pipeline.
@@ -51,7 +51,8 @@ namespace Pharmacy.PL
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+            app.UseSession();
+
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();

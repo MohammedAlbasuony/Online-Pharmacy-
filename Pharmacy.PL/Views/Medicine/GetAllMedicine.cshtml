@@ -77,9 +77,18 @@
                                 }
                                 else
                                 {
-                                    <span class="text-muted">N/A</span>
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                        <input type="hidden" name="medicationId" value="@medicine.MedicineID" />
+                                        <input type="hidden" name="name" value="@medicine.Name" />
+                                        <input type="hidden" name="price" value="@medicine.Price" />
+                                        <input type="hidden" name="maxQty" value="@medicine.StockQuantity" />
+                                        <input type="hidden" name="imageUrl" value="@medicine.ImageUrl" />
+                                        <input type="hidden" name="isRx" value="@medicine.RequiresPrescription" />
+                                        <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
+                                    </form>
                                 }
                             </td>
+
 
                         </tr>
                     }
