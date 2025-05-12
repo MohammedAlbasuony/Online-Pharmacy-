@@ -16,6 +16,7 @@ namespace Pharmacy.DAL.DB
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Consultation> Consultations { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<Medicine> Medicines { get; set; }

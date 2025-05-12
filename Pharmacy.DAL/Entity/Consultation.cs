@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Pharmacy.DAL.Entity
+{
+    public enum ConsultationType
+    {
+        VideoCall,
+        InPerson,
+        PhoneCall
+    }
+
+    public enum ConsultationStatus
+    {
+        Scheduled,
+        Completed,
+        Cancelled
+    }
+    public class Consultation
+    {
+        public int Id { get; set; }
+        public string PatientName { get; set; }
+        public DateTime Date { get; set; }
+        public TimeSpan Time { get; set; }
+        public ConsultationType Type { get; set; }
+        public ConsultationStatus Status { get; set; }
+    }
+
+}
