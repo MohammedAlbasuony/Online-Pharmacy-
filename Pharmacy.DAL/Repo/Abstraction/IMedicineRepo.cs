@@ -14,5 +14,7 @@ namespace Pharmacy.DAL.Repo.Abstraction
         Task<List<Medicine>> GetAllAsync();
         Task<Medicine> GetByIdAsync(int id);
         Task<bool> UpdateAsync(Medicine medicine);
+        Task<bool> ImportMedicinesFromExcelAsync(Stream stream);
+
     }
 }

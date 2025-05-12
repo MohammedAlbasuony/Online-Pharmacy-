@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using Pharmacy.DAL.DB;
 using Pharmacy.DAL.Entity;
 using Pharmacy.DAL.Repo.Abstraction;
@@ -88,7 +89,7 @@ namespace Pharmacy.DAL.Repo.Implementation
             }
         }
 
-       
+
 
 
         //  update method
@@ -112,6 +113,8 @@ namespace Pharmacy.DAL.Repo.Implementation
                 existingMedicine.StockQuantity = medicine.StockQuantity;
                 existingMedicine.Manufacturer = medicine.Manufacturer;
                 existingMedicine.ExpiryDate = medicine.ExpiryDate;
+                existingMedicine.RequiresPrescription = medicine.RequiresPrescription;
+                existingMedicine.ImageUrl = medicine.ImageUrl;
 
                 await _DBcontext.SaveChangesAsync();
                 return true;
@@ -122,6 +125,70 @@ namespace Pharmacy.DAL.Repo.Implementation
                 return false;
             }
         }
+
+        public async Task<bool> ImportMedicinesFromExcelAsync(Stream stream)
+        {
+            try
+            {
+                using var package = new ExcelPackage(stream);
+                var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+
+                if (worksheet == null)
+                    throw new Exception("No worksheet found in the Excel file.");
+
+                var rowCount = worksheet.Dimension.Rows;
+                var medicines = new List<Medicine>();
+
+                for (int row = 2; row <= rowCount; row++) 
+                {
+                    var name = worksheet.Cells[row, 1].Text?.Trim();
+                    var category = worksheet.Cells[row, 2].Text?.Trim();
+                    var priceText = worksheet.Cells[row, 3].Text?.Trim();
+                    var quantityText = worksheet.Cells[row, 4].Text?.Trim();
+                    var manufacturer = worksheet.Cells[row, 5].Text?.Trim();
+                    var expiryDate = worksheet.Cells[row, 6].GetValue<DateTime>();
+                    var prescriptionText = worksheet.Cells[row, 7].Text?.Trim();
+                    var imageUrl = worksheet.Cells[row, 8].Text?.Trim();
+
+                    // Try parsing
+                    if (double.TryParse(priceText, out double price) &&
+                        int.TryParse(quantityText, out int quantity) &&
+                        bool.TryParse(prescriptionText, out bool requiresPrescription))
+                    {
+                        var medicine = new Medicine
+                        {
+                            Name = name,
+                            Category = category,
+                            Price = price,
+                            StockQuantity = quantity,
+                            Manufacturer = manufacturer,
+                            ExpiryDate = expiryDate,
+                            RequiresPrescription = requiresPrescription,
+                            ImageUrl = imageUrl 
+                        };
+
+                        medicines.Add(medicine);
+                    }
+                    // Optionally log or collect row errors
+                }
+
+                if (medicines.Any())
+                {
+                    await _DBcontext.Medicines.AddRangeAsync(medicines);
+                    await _DBcontext.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch
+            {
+                // Optionally log the exception
+                return false;
+            }
+        }
+
+
     }
 }
+
 

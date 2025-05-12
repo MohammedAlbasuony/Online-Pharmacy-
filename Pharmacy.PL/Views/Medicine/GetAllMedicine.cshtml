@@ -3,39 +3,70 @@
     ViewData["Title"] = "Medicine List";
 }
 
-<h2>Medicine List</h2>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Medicine List</h2>
+        <a asp-action="AddMedicine" class="btn btn-primary shadow">+ Add New Medicine</a>
+    </div>
 
-<a asp-action="AddMedicine" class="btn btn-success mb-3">Add New Medicine</a>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Manufacturer</th>
-            <th>Expiry Date</th>
-            <th>Requires Prescription</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var medicine in Model)
-        {
-            <tr>
-                <td>@medicine.Name</td>
-                <td>@medicine.Category</td>
-                <td>@medicine.Price</td>
-                <td>@medicine.StockQuantity</td>
-                <td>@medicine.Manufacturer</td>
-                <td>@medicine.ExpiryDate.ToShortDateString()</td>
-                <td>@(medicine.RequiresPrescription ? "Yes" : "No")</td>
-                <td>
-                    <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="DeleteMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Manufacturer</th>
+                        <th>Expiry</th>
+                        <th>Prescription</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var medicine in Model)
+                    {
+                        <tr>
+                            <td>@medicine.Name</td>
+                            <td>@medicine.Category</td>
+                            <td>@medicine.Price</td>
+                            <td>@medicine.StockQuantity</td>
+                            <td>@medicine.Manufacturer</td>
+                            <td>@medicine.ExpiryDate.ToShortDateString()</td>
+                            <td>
+                                <span class="badge bg-@(medicine.RequiresPrescription ? "danger" : "success")">
+                                    @(medicine.RequiresPrescription ? "Yes" : "No")
+                                </span>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(medicine.ImageUrl))
+                                {
+                                    <img src="@medicine.ImageUrl" alt="Image" class="img-thumbnail" style="max-height: 60px;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-warning btn-sm">Edit</a>
+                                    <a asp-action="DeleteMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-danger btn-sm">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center mt-5">
+            No medicines found. Click "Add New Medicine" to get started.
+        </div>
+    }
+</div>

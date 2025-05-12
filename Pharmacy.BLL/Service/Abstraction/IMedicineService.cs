@@ -15,5 +15,7 @@ namespace Pharmacy.BLL.Service.Abstraction
         Task<List<AddMedicineVM>> GetAllAsync();
         Task<UpdateMedicineVM> GetByIdAsync(int Id);
         Task<bool> UpdateAsync(UpdateMedicineVM medicine);
+        Task<bool> ImportFromExcelAsync(Stream stream);
+
     }
 }

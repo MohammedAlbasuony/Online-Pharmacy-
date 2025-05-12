@@ -3,55 +3,102 @@
     ViewData["Title"] = "Add New Medicine";
 }
 
-<h2>Add New Medicine</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow rounded-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Add New Medicine</h4>
+                </div>
+                <div class="card-body">
 
-<form asp-action="AddMedicine" method="post">
-    <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+                    <!-- Excel Upload Form -->
+                    <form asp-controller="ImportFromExcel" asp-action="UploadExcel" enctype="multipart/form-data" method="post" class="mb-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Upload Excel Sheet</label>
+                            <div class="input-group">
+                                <input type="file" name="file" accept=".xlsx, .xls" class="form-control" required>
+                                <button type="submit" class="btn btn-primary">Upload</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Main Form -->
+                    <form asp-action="AddMedicine" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label fw-semibold"></label>
+                            <input asp-for="Category" class="form-control" />
+                            <span asp-validation-for="Category" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label fw-semibold"></label>
+                            <input asp-for="Price" class="form-control" />
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="StockQuantity" class="form-label fw-semibold"></label>
+                            <input asp-for="StockQuantity" class="form-control" />
+                            <span asp-validation-for="StockQuantity" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Manufacturer" class="form-label fw-semibold"></label>
+                            <input asp-for="Manufacturer" class="form-control" />
+                            <span asp-validation-for="Manufacturer" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ExpiryDate" class="form-label fw-semibold"></label>
+                            <input asp-for="ExpiryDate" class="form-control" type="date" />
+                            <span asp-validation-for="ExpiryDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="form-label fw-semibold"></label>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="Enter image URL (optional)" oninput="previewImage(this.value)" />
+                            <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <img id="imagePreview" src="#" alt="Image preview will appear here" class="img-thumbnail d-none" style="max-height: 200px;" />
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="RequiresPrescription" class="form-check-input" id="RequiresPrescription" />
+                            <label asp-for="RequiresPrescription" class="form-check-label"></label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">Add Medicine</button>
+                            <a asp-action="GetAllMedicine" class="btn btn-outline-secondary">Back to List</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Category"></label>
-        <input asp-for="Category" class="form-control" />
-        <span asp-validation-for="Category" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Price"></label>
-        <input asp-for="Price" class="form-control" />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="StockQuantity"></label>
-        <input asp-for="StockQuantity" class="form-control" />
-        <span asp-validation-for="StockQuantity" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Manufacturer"></label>
-        <input asp-for="Manufacturer" class="form-control" />
-        <span asp-validation-for="Manufacturer" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ExpiryDate"></label>
-        <input asp-for="ExpiryDate" class="form-control" type="date" />
-        <span asp-validation-for="ExpiryDate" class="text-danger"></span>
-    </div>
-
-    <div class="form-check">
-        <input asp-for="RequiresPrescription" class="form-check-input" />
-        <label asp-for="RequiresPrescription" class="form-check-label"></label>
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">Add</button>
-    <a asp-action="GetAllMedicine" class="btn btn-secondary mt-3">Back</a>
-</form>
+</div>
 
 @section Scripts {
+    <script>
+        function previewImage(url) {
+            const img = document.getElementById('imagePreview');
+            if (url && url.startsWith('http')) {
+                img.src = url;
+                img.classList.remove('d-none');
+            } else {
+                img.classList.add('d-none');
+            }
+        }
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

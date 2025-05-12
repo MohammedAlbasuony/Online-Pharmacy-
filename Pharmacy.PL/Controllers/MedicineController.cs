@@ -85,6 +85,19 @@ namespace Pharmacy.PL.Controllers
             }
             return View(Medicine);
         }
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile excelFile)
+        {
+            if (excelFile != null && excelFile.Length > 0)
+            {
+                using var stream = excelFile.OpenReadStream();
+                var result = await _medicineService.ImportFromExcelAsync(stream);
+                if (result)
+                    return RedirectToAction("GetAllMedicine"); // Or success view
+            }
+
+            return View("Error"); // Or return with validation message
+        }
     }
 }
 

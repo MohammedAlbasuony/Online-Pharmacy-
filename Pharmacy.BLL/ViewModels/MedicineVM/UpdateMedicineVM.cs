@@ -16,5 +16,6 @@ namespace Pharmacy.BLL.ViewModels.MedicineVM
         public string Manufacturer { get; set; }
         public DateTime ExpiryDate { get; set; }
         public bool RequiresPrescription { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

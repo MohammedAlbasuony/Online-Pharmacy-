@@ -33,6 +33,7 @@ namespace Pharmacy.BLL.Service.Implementation
                     Manufacturer = medicine.Manufacturer,
                     ExpiryDate = medicine.ExpiryDate,
                     RequiresPrescription = medicine.RequiresPrescription,
+                    ImageUrl = medicine.ImageUrl,
 
                 };
                 return await _medicineRepo.AddAsync(Medicine);
@@ -65,6 +66,7 @@ namespace Pharmacy.BLL.Service.Implementation
                     Manufacturer = medicines.Manufacturer,
                     ExpiryDate = medicines.ExpiryDate,
                     RequiresPrescription = medicines.RequiresPrescription,
+                    ImageUrl = medicines.ImageUrl,
 
 
                 })
@@ -92,6 +94,7 @@ namespace Pharmacy.BLL.Service.Implementation
                         Manufacturer = medicine.Manufacturer,
                         ExpiryDate = medicine.ExpiryDate,
                         RequiresPrescription = medicine.RequiresPrescription,
+                        ImageUrl = medicine.ImageUrl,
                     };
                 }
             }
@@ -115,12 +118,17 @@ namespace Pharmacy.BLL.Service.Implementation
                     existingMedicine.Manufacturer = medicine.Manufacturer;
                     existingMedicine.ExpiryDate = medicine.ExpiryDate;
                     existingMedicine.RequiresPrescription = medicine.RequiresPrescription;
+                    existingMedicine.ImageUrl = medicine.ImageUrl;
 
 
                     return await _medicineRepo.UpdateAsync(existingMedicine);
                 }
             }
             return false;
+        }
+        public async Task<bool> ImportFromExcelAsync(Stream stream)
+        {
+            return await _medicineRepo.ImportMedicinesFromExcelAsync(stream);
         }
     }
 }
