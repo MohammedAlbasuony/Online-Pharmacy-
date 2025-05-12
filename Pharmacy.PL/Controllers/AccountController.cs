@@ -53,21 +53,34 @@ namespace Pharmacy.PL.Controllers
             using var transaction = await _db.Database.BeginTransactionAsync();
             try
             {
+                // Create ApplicationUser instance first
                 ApplicationUser user = new ApplicationUser
                 {
-                    UserName = model.Name,
+                    UserName = model.Email,
                     Email = model.Email,
                     FullName = model.Name,
                     UserType = model.UserType
                 };
 
+                IdentityResult userCreateResult = await userManager.CreateAsync(user, model.Password);
+                if (!userCreateResult.Succeeded)
+                {
+                    foreach (var error in userCreateResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+
+                // Initialize userTypeId and add appropriate user-related data
                 switch (model.UserType)
                 {
                     case EnUserType.Patient:
                         var patient = new Patient
                         {
                             Name = model.Name,
-                            MedicalHistory = "No medical history"
+                            MedicalHistory = "No medical history",
+                            ApplicationUserId = user.Id // Assign the UserId
                         };
                         _db.Patients.Add(patient);
                         await _db.SaveChangesAsync();
@@ -99,17 +112,10 @@ namespace Pharmacy.PL.Controllers
                         return View(model);
                 }
 
+                // Now assign the userTypeId to the user
                 user.UserTypeID = userTypeId.Value;
-                var result = await userManager.CreateAsync(user, model.Password);
-                if (!result.Succeeded)
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                    return View(model);
-                }
 
+                // Add the user to the appropriate role
                 if (!await roleManager.RoleExistsAsync(role))
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
@@ -117,16 +123,18 @@ namespace Pharmacy.PL.Controllers
 
                 await userManager.AddToRoleAsync(user, role);
 
+                // Commit the transaction
                 await transaction.CommitAsync();
                 return RedirectToAction("Login", "Account");
             }
-            catch
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 ModelState.AddModelError("", "An error occurred while creating your account.");
                 return View(model);
             }
         }
+
 
 
         [HttpGet]

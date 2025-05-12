@@ -17,10 +17,12 @@ namespace Pharmacy.DAL.DB
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Consultation> Consultations { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<Medicine> Medicines { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<ManualReview> ManualReviews { get; set; }
         public DbSet<Pharmacist> Pharmacists { get; set; }
@@ -31,6 +33,37 @@ namespace Pharmacy.DAL.DB
             modelBuilder.Entity<ManualReview>().HasNoKey();
             modelBuilder.Entity<PatientManagement>().HasNoKey();
 
+
+            modelBuilder.Entity<Patient>()
+                .HasOne(p => p.ApplicationUser)
+                .WithMany() // or WithOne() if 1-to-1
+                .HasForeignKey(p => p.ApplicationUserId);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Patient)
+                .WithMany()
+                .HasForeignKey(o => o.PatientID);
+
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderItems)
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Medicine)
+                .WithMany()
+                .HasForeignKey(oi => oi.MedicationId);
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Order)
+                .WithOne(o => o.Payment)
+                .HasForeignKey<Payment>(p => p.OrderID);
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Patient)
+                .WithMany()
+                .HasForeignKey(p => p.PatientID);
 
             // Prescription
             modelBuilder.Entity<Prescription>()
@@ -54,10 +87,7 @@ namespace Pharmacy.DAL.DB
                 .WithMany(p => p.Orders)
                 .HasForeignKey(o => o.PatientID);
 
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Medicine)
-                .WithMany()
-                .HasForeignKey(o => o.MedicineID);
+           
 
             // Payment
             modelBuilder.Entity<Payment>()

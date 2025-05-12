@@ -14,5 +14,7 @@ namespace Pharmacy.DAL.Entity
         public ICollection<Order> Orders { get; set; }
         public ICollection<Prescription> Prescriptions { get; set; }
         public ICollection<Payment> Payments { get; set; }
+        public string ApplicationUserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }

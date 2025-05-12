@@ -5,6 +5,9 @@
 }
 
 <h2>Your Shopping Cart</h2>
+<div class="text-start mt-3">
+    <a asp-controller="Medicine" asp-action="GetallMedicine" class="btn btn-secondary">Back to Medicines</a>
+</div>
 
 @if (!Model.Any())
 {
@@ -52,6 +55,6 @@ else
     <div class="text-end">
         <h4>Total: @total.ToString("C")</h4>
         <a asp-action="ClearCart" class="btn btn-outline-danger">Clear Cart</a>
-        <a asp-action="Checkout" class="btn btn-primary">Checkout</a>
+        <a asp-controller="Cart" asp-action="Checkout" class="btn btn-primary">Checkout</a>
     </div>
 }

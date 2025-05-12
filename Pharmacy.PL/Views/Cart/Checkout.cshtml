@@ -1,0 +1,48 @@
+﻿@model List<Pharmacy.DAL.Entity.CartItem>
+
+@{
+    ViewData["Title"] = "Checkout";
+    decimal total = Model.Sum(item => item.UnitPrice * item.Quantity);
+}
+
+<h2>Checkout</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Medication</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MedicationName</td>
+                <td>@item.Quantity</td>
+                <td>@item.UnitPrice.ToString("C")</td>
+                <td>@(item.UnitPrice * item.Quantity)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Total Amount: @total.ToString("C")</h4>
+
+<form asp-action="ProcessCheckout" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label for="PaymentMethod">Select Payment Method:</label>
+        <select class="form-control" name="PaymentMethod" id="PaymentMethod">
+            <option value="Cash">Cash</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="PayPal">PayPal</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Confirm and Pay</button>
+    <a href="@Url.Action("Cart")" class="btn btn-secondary mt-3">Back to Cart</a>
+</form>

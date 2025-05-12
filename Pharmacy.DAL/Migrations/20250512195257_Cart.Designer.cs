@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pharmacy.DAL.DB;
 
@@ -11,9 +12,11 @@ using Pharmacy.DAL.DB;
 namespace Pharmacy.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512195257_Cart")]
+    partial class Cart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -467,10 +470,6 @@ namespace Pharmacy.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientID"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("MedicalHistory")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -480,8 +479,6 @@ namespace Pharmacy.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PatientID");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Patients");
                 });
@@ -693,17 +690,6 @@ namespace Pharmacy.DAL.Migrations
                     b.Navigation("Medicine");
 
                     b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("Pharmacy.DAL.Entity.Patient", b =>
-                {
-                    b.HasOne("Pharmacy.DAL.Entity.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Pharmacy.DAL.Entity.Payment", b =>
