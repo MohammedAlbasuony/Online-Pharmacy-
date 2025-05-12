@@ -76,7 +76,7 @@
                             <td>@item.MedicationName</td>
                             <td>@item.Quantity</td>
                             <td>@item.UnitPrice.ToString("C")</td>
-                            <td>@(item.Quantity * item.UnitPrice).ToString("C")</td>
+                            <td>@(item.Quantity * item.UnitPrice)</td>
                         </tr>
                     }
                 </tbody>
@@ -84,8 +84,8 @@
         </div>
     </div>
 
-    <div class="text-center mt-4">
-        <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary me-2">
+    <div class="text-center mt-4 d-flex justify-content-center gap-2">
+        <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary">
             <i class="bi bi-arrow-left-circle"></i> Back to Cart
         </a>
 
@@ -99,4 +99,5 @@
             </form>
         }
     </div>
+
 </div>
