@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.BLL.Implementation;
+using Pharmacy.BLL.Mapper;
 using Pharmacy.BLL.Service.Abstraction;
 using Pharmacy.BLL.Service.Implementation;
 using Pharmacy.DAL.DB;
@@ -38,10 +39,15 @@ namespace Pharmacy.PL
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IMedicineRepo, MedicineRepo>();
             builder.Services.AddScoped<IMedicineService, MedicineService>();
+            builder.Services.AddScoped<IPatientService, PatientService>();
+            builder.Services.AddScoped<IPatientsRepo, PatientsRepo>();
 
+            builder.Services.AddAutoMapper(typeof(MyProfile));
 
             builder.Services.AddSession(); // Move this line before builder.Build()  
-            var app = builder.Build();
+            builder.Services.AddAutoMapper(typeof(Program).Assembly);
+            var app = builder.Build();
+
              SeedService.SeedDatabase(app.Services);
 
             // Configure the HTTP request pipeline.

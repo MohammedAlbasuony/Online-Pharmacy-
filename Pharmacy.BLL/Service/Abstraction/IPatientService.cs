@@ -1,9 +1,4 @@
-﻿using Pharmacy.BLL.ViewModels.PatientVm;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Hospital_Mangment_System_BLL.View_model.patientVM;
 
 namespace Pharmacy.BLL.Service.Abstraction
 {

@@ -23,7 +23,7 @@ namespace Pharmacy.DAL.Repo.Implementation
         {
             try
             {
-                await _DBcontext.patients.AddAsync(patient);
+                await _DBcontext.Patients.AddAsync(patient);
                 await _DBcontext.SaveChangesAsync();
                 return true;
             }
@@ -41,7 +41,7 @@ namespace Pharmacy.DAL.Repo.Implementation
                 var user = await _DBcontext.Users.FindAsync(id);
                 if (user != null)
                 {
-                    user.IsDeleted = true;
+                    _DBcontext.Users.Remove(user); // Hard delete
                     await _DBcontext.SaveChangesAsync();
                     return true;
                 }
@@ -54,13 +54,13 @@ namespace Pharmacy.DAL.Repo.Implementation
             }
         }
 
+
         public async Task<List<Patient>> GetAllAsync()
         {
             try
             {
                 return await _DBcontext.Patients
             .Include(d => d.ApplicationUser)
-            .Where(d => !d.ApplicationUser.IsDeleted) // Ensure only non-deleted users
             .ToListAsync();
             }
             catch (Exception ex)
@@ -76,7 +76,7 @@ namespace Pharmacy.DAL.Repo.Implementation
             {
                 return await _DBcontext.Patients
              .Include(d => d.ApplicationUser)
-             .FirstOrDefaultAsync(d => d.ApplicationUserId == id && !d.ApplicationUser.IsDeleted);
+             .FirstOrDefaultAsync(d => d.ApplicationUserId == id );
             }
             catch (Exception ex)
             {
@@ -94,7 +94,6 @@ namespace Pharmacy.DAL.Repo.Implementation
 
                 if (result != null)
                 {
-                    result.Phone = patient.Phone;
                     await _DBcontext.SaveChangesAsync();
                     return true;
                 }

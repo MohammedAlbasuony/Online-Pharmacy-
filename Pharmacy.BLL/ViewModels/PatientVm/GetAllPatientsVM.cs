@@ -2,7 +2,7 @@
 
 namespace Hospital_Mangment_System_BLL.View_model.patientVM
 {
-    public class GetPatientByIdVM
+    public class GetAllPatientssVM
     {
         public int PatientID { get; set; }
         public string Name { get; set; }

@@ -1,16 +1,12 @@
-﻿using Pharmacy.BLL.Service.Abstraction;
-using Pharmacy.BLL.ViewModels.PatientVm;
+﻿using AutoMapper;
+using Hospital_Mangment_System_BLL.View_model.patientVM;
+using Pharmacy.BLL.Service.Abstraction;
 using Pharmacy.DAL.Entity;
 using Pharmacy.DAL.Repo.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pharmacy.BLL.Service.Implementation
 {
-    public class PatientService:IPatientService
+    public class PatientService : IPatientService
     {
         private readonly IPatientsRepo _patientsRepo;
         private readonly IMapper _mapper;

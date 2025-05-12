@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hospital_Mangment_System_BLL.View_model.patientVM;
+using Microsoft.AspNetCore.Mvc;
 using Pharmacy.BLL.Service.Abstraction;
-using Pharmacy.BLL.ViewModels.PatientVm;
 
 namespace Pharmacy.PL.Controllers
 {

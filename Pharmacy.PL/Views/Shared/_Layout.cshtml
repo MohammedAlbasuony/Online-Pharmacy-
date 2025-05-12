@@ -62,7 +62,7 @@
                         @if (User.IsInRole("Doctor"))
                         {
                             @* <li><a href="@Url.Action("Index", "Doctor")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Doctor" ? "active" : "")">Dashboard</a></li> *@
-                            <li><a href="@Url.Action("Patients", "Doctor")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Patients" ? "active" : "")">Patients</a></li>
+                            <li><a href="@Url.Action("GetallPatient", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Patients" ? "active" : "")">Patients</a></li>
                             <li><a href="@Url.Action("Index", "Consultation")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Consultation" ? "active" : "")">Consultations</a></li>
                             <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
                         }
@@ -134,6 +134,8 @@
                 }
             </div>
         </div>
+        @RenderSection("Styles", required: false)
+
     </header>
     <div class="container">
         <main role="main" class="pb-3">
