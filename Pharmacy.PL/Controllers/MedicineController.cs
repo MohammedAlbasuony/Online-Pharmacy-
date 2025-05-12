@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Pharmacy.BLL.Service.Abstraction;
-using Pharmacy.BLL.Service.Implementation;
 using Pharmacy.BLL.ViewModels.MedicineVM;
+using X.PagedList.Extensions;
 
 namespace Pharmacy.PL.Controllers
 {
@@ -19,10 +18,13 @@ namespace Pharmacy.PL.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> GetAllMedicine()
+        public async Task<IActionResult> GetAllMedicine(int page = 1)
         {
-            var result = await _medicineService.GetAllAsync();
-            return View(result);
+            int pageSize = 10;  // Define the page size
+            var medicines = await _medicineService.GetAllAsync(); // Assuming GetAllAsync() returns a List
+            var pagedMedicines = medicines.ToPagedList(page, pageSize); // Paginate the list
+
+            return View(pagedMedicines); // Pass the paginated result to the view
         }
 
         public async Task<IActionResult> GetMedicineById(int id)
@@ -41,11 +43,12 @@ namespace Pharmacy.PL.Controllers
         public async Task<IActionResult> AddMedicine(AddMedicineVM Medicine)
         {
             if (ModelState.IsValid)
-             {
+            {
                 var result = await _medicineService.AddAsync(Medicine);
                 if (result)
                 {
-                    return RedirectToAction("GetAllMedicine");
+                    TempData["Success"] = "Medicine added successfully!";
+                    return View(Medicine);
                 }
                 ModelState.AddModelError("", "Unable to add Medicine. Please try again.");
             }
@@ -56,12 +59,14 @@ namespace Pharmacy.PL.Controllers
         public async Task<IActionResult> DeleteMedicine(int id)
         {
             await _medicineService.DeleteAsync(id);
+            TempData["DeleteSuccess"] = "Medicine deleted successfully!";
             return RedirectToAction(nameof(GetAllMedicine));
         }
         [HttpPost, ActionName("DeleteMedicine")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _medicineService.DeleteAsync(id);
+            TempData["DeleteSuccess"] = "Medicine deleted successfully!";
             return RedirectToAction(nameof(GetAllMedicine));
         }
         [HttpGet]
@@ -81,7 +86,8 @@ namespace Pharmacy.PL.Controllers
             if (ModelState.IsValid)
             {
                 await _medicineService.UpdateAsync(Medicine);
-                return RedirectToAction("GetAllMedicine");
+                TempData["Success"] = "Medicine updated successfully!";
+                return View(Medicine);
             }
             return View(Medicine);
         }
@@ -96,7 +102,8 @@ namespace Pharmacy.PL.Controllers
                     return RedirectToAction("GetAllMedicine"); // Or success view
             }
 
-            return View("Error"); // Or return with validation message
+            ModelState.AddModelError("", "Invalid file. Please upload a valid Excel file.");
+            return View("AddMedicine");
         }
     }
 }

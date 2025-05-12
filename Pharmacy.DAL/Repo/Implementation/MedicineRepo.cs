@@ -3,11 +3,6 @@ using OfficeOpenXml;
 using Pharmacy.DAL.DB;
 using Pharmacy.DAL.Entity;
 using Pharmacy.DAL.Repo.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pharmacy.DAL.Repo.Implementation
 {
@@ -54,7 +49,7 @@ namespace Pharmacy.DAL.Repo.Implementation
             catch (Exception ex)
             {
                 Console.WriteLine($"Error deleting user: {ex.Message}");
-                return false; 
+                return false;
             }
         }
 
@@ -115,6 +110,8 @@ namespace Pharmacy.DAL.Repo.Implementation
                 existingMedicine.ExpiryDate = medicine.ExpiryDate;
                 existingMedicine.RequiresPrescription = medicine.RequiresPrescription;
                 existingMedicine.ImageUrl = medicine.ImageUrl;
+                existingMedicine.Uses = medicine.Uses;
+                existingMedicine.SideEffects = medicine.SideEffects;
 
                 await _DBcontext.SaveChangesAsync();
                 return true;
@@ -126,66 +123,89 @@ namespace Pharmacy.DAL.Repo.Implementation
             }
         }
 
+
         public async Task<bool> ImportMedicinesFromExcelAsync(Stream stream)
         {
             try
             {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using var package = new ExcelPackage(stream);
                 var worksheet = package.Workbook.Worksheets.FirstOrDefault();
 
-                if (worksheet == null)
-                    throw new Exception("No worksheet found in the Excel file.");
+                if (worksheet == null || worksheet.Dimension == null)
+                    throw new Exception("No worksheet found or worksheet is empty.");
 
                 var rowCount = worksheet.Dimension.Rows;
-                var medicines = new List<Medicine>();
 
-                for (int row = 2; row <= rowCount; row++) 
+                for (int row = 2; row <= rowCount; row++) // Skip header row
                 {
-                    var name = worksheet.Cells[row, 1].Text?.Trim();
-                    var category = worksheet.Cells[row, 2].Text?.Trim();
-                    var priceText = worksheet.Cells[row, 3].Text?.Trim();
-                    var quantityText = worksheet.Cells[row, 4].Text?.Trim();
-                    var manufacturer = worksheet.Cells[row, 5].Text?.Trim();
-                    var expiryDate = worksheet.Cells[row, 6].GetValue<DateTime>();
-                    var prescriptionText = worksheet.Cells[row, 7].Text?.Trim();
-                    var imageUrl = worksheet.Cells[row, 8].Text?.Trim();
+                    var name = worksheet.Cells[row, 1].Text.Trim();
+                    var category = worksheet.Cells[row, 2].Text.Trim();
+                    var uses = worksheet.Cells[row, 3].Text.Trim();
+                    var sideEffects = worksheet.Cells[row, 4].Text.Trim();
+                    var imageUrl = worksheet.Cells[row, 5].Text.Trim();
+                    var manufacturer = worksheet.Cells[row, 6].Text.Trim();
+                    var priceText = worksheet.Cells[row, 7].Text.Trim();
+                    var quantityText = worksheet.Cells[row, 8].Text.Trim();
+                    var expiryDateText = worksheet.Cells[row, 9].Text.Trim();
+                    var prescriptionText = worksheet.Cells[row, 10].Text.Trim();
+
+                    // Validate mandatory fields
+                    if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(category) ||
+                        string.IsNullOrWhiteSpace(priceText) || string.IsNullOrWhiteSpace(quantityText))
+                    {
+                        Console.WriteLine($"Skipping row {row}: Missing mandatory fields.");
+                        continue;
+                    }
 
                     // Try parsing
-                    if (double.TryParse(priceText, out double price) &&
-                        int.TryParse(quantityText, out int quantity) &&
-                        bool.TryParse(prescriptionText, out bool requiresPrescription))
+                    bool priceParsed = double.TryParse(priceText, out double price);
+                    bool quantityParsed = int.TryParse(quantityText, out int quantity);
+                    bool expiryParsed = DateTime.TryParse(expiryDateText, out DateTime expiryDate);
+
+                    // Handle custom "Yes"/"No" values for RequiresPrescription
+                    bool requiresPrescription = false;
+                    if (!string.IsNullOrWhiteSpace(prescriptionText))
                     {
-                        var medicine = new Medicine
-                        {
-                            Name = name,
-                            Category = category,
-                            Price = price,
-                            StockQuantity = quantity,
-                            Manufacturer = manufacturer,
-                            ExpiryDate = expiryDate,
-                            RequiresPrescription = requiresPrescription,
-                            ImageUrl = imageUrl 
-                        };
-
-                        medicines.Add(medicine);
+                        // Check for "Yes" or "No"
+                        requiresPrescription = prescriptionText.Equals("Yes", StringComparison.OrdinalIgnoreCase);
                     }
-                    // Optionally log or collect row errors
-                }
 
-                if (medicines.Any())
-                {
-                    await _DBcontext.Medicines.AddRangeAsync(medicines);
-                    await _DBcontext.SaveChangesAsync();
+                    if (!priceParsed || !quantityParsed || !expiryParsed)
+                    {
+                        Console.WriteLine($"Skipping row {row}: Invalid data format.");
+                        continue;
+                    }
+
+                    var medicine = new Medicine
+                    {
+                        Name = name,
+                        Category = category,
+                        Price = price,
+                        StockQuantity = quantity,
+                        Manufacturer = manufacturer,
+                        ExpiryDate = expiryDate,
+                        RequiresPrescription = requiresPrescription,
+                        ImageUrl = imageUrl,
+                        Uses = uses,
+                        SideEffects = sideEffects
+                    };
+
+                    // Save to DB
+                    await AddAsync(medicine);
+
+                    Console.WriteLine($"Imported medicine '{name}' successfully.");
                 }
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                // Optionally log the exception
+                Console.WriteLine($"Error importing medicines: {ex.Message}");
                 return false;
             }
         }
+
 
 
     }

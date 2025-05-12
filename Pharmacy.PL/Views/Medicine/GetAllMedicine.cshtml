@@ -1,7 +1,14 @@
-﻿@model List<Pharmacy.BLL.ViewModels.MedicineVM.AddMedicineVM>
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Pharmacy.BLL.ViewModels.MedicineVM.AddMedicineVM>
+
 @{
     ViewData["Title"] = "Medicine List";
 }
+
+<!-- SweetAlert2 CDN -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -22,6 +29,8 @@
                         <th>Manufacturer</th>
                         <th>Expiry</th>
                         <th>Prescription</th>
+                        <th>Uses</th>
+                        <th>Side Effects</th>
                         <th>Image</th>
                         <th>Actions</th>
                     </tr>
@@ -36,15 +45,18 @@
                             <td>@medicine.StockQuantity</td>
                             <td>@medicine.Manufacturer</td>
                             <td>@medicine.ExpiryDate.ToShortDateString()</td>
-                            <td>
-                                <span class="badge bg-@(medicine.RequiresPrescription ? "danger" : "success")">
-                                    @(medicine.RequiresPrescription ? "Yes" : "No")
-                                </span>
+                            <td class="fw-bold text-@(medicine.RequiresPrescription ?  "success":"danger" )">
+                                @(medicine.RequiresPrescription ? "Yes" : "No")
                             </td>
+                            <td>@medicine.Uses</td>
+                            <td>@medicine.SideEffects</td>
+
                             <td>
                                 @if (!string.IsNullOrEmpty(medicine.ImageUrl))
                                 {
-                                    <img src="@medicine.ImageUrl" alt="Image" class="img-thumbnail" style="max-height: 60px;" />
+                                    <a href="@medicine.ImageUrl" target="_blank">
+                                        <img src="@medicine.ImageUrl" alt="Image" class="img-thumbnail" style="max-height: 60px;" />
+                                    </a>
                                 }
                                 else
                                 {
@@ -54,13 +66,61 @@
                             <td>
                                 <div class="btn-group" role="group">
                                     <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-warning btn-sm">Edit</a>
-                                    <a asp-action="DeleteMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-danger btn-sm">Delete</a>
+                                    <button onclick="confirmDelete('@Url.Action("DeleteMedicine", new { id = medicine.MedicineID })')" class="btn btn-outline-danger btn-sm">Delete</button>
                                 </div>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+        </div>
+
+        <!-- Modern Pagination with Custom Style -->
+        <div class="d-flex justify-content-center mt-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-lg">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber - 1 })" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    }
+
+                    @for (var i = 1; i <= Model.PageCount; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = i })">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber + 1 })" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
         </div>
     }
     else
@@ -70,3 +130,34 @@
         </div>
     }
 </div>
+
+<script>
+    function confirmDelete(deleteUrl) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This medicine will be permanently deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = deleteUrl;
+            }
+        });
+    }
+
+    @if (TempData["DeleteSuccess"] != null)
+    {
+        <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: '@TempData["DeleteSuccess"]',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+        </text>
+    }
+</script>

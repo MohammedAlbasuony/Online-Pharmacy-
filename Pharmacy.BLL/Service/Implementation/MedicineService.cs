@@ -34,6 +34,8 @@ namespace Pharmacy.BLL.Service.Implementation
                     ExpiryDate = medicine.ExpiryDate,
                     RequiresPrescription = medicine.RequiresPrescription,
                     ImageUrl = medicine.ImageUrl,
+                    Uses = medicine.Uses,
+                    SideEffects = medicine.SideEffects,
 
                 };
                 return await _medicineRepo.AddAsync(Medicine);
@@ -67,7 +69,8 @@ namespace Pharmacy.BLL.Service.Implementation
                     ExpiryDate = medicines.ExpiryDate,
                     RequiresPrescription = medicines.RequiresPrescription,
                     ImageUrl = medicines.ImageUrl,
-
+                    Uses = medicines.Uses,
+                    SideEffects = medicines.SideEffects,
 
                 })
                 .ToList();
@@ -95,6 +98,9 @@ namespace Pharmacy.BLL.Service.Implementation
                         ExpiryDate = medicine.ExpiryDate,
                         RequiresPrescription = medicine.RequiresPrescription,
                         ImageUrl = medicine.ImageUrl,
+                        Uses = medicine.Uses,
+                        SideEffects = medicine.SideEffects,
+
                     };
                 }
             }
@@ -119,6 +125,8 @@ namespace Pharmacy.BLL.Service.Implementation
                     existingMedicine.ExpiryDate = medicine.ExpiryDate;
                     existingMedicine.RequiresPrescription = medicine.RequiresPrescription;
                     existingMedicine.ImageUrl = medicine.ImageUrl;
+                    existingMedicine.Uses = medicine.Uses;
+                    existingMedicine.SideEffects = medicine.SideEffects;
 
 
                     return await _medicineRepo.UpdateAsync(existingMedicine);

@@ -52,9 +52,24 @@
                         </div>
 
                         <div class="mb-3">
+                            <label asp-for="Uses" class="form-label fw-semibold"></label>
+                            <input asp-for="Uses" class="form-control" />
+                            <span asp-validation-for="Uses" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SideEffects" class="form-label fw-semibold"></label>
+                            <input asp-for="SideEffects" class="form-control" />
+                            <span asp-validation-for="SideEffects" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
                             <label asp-for="ImageUrl" class="form-label fw-semibold"></label>
-                            <input asp-for="ImageUrl" class="form-control" placeholder="Enter image URL (optional)" />
+                            <input asp-for="ImageUrl" class="form-control" placeholder="Enter image URL (optional)" oninput="previewImage(this.value)" />
                             <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <img id="imagePreview" src="#" alt="Image preview will appear here" class="img-thumbnail d-none" style="max-height: 200px;" />
                         </div>
 
                         <div class="form-check mb-3">
@@ -74,7 +89,35 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function previewImage(url) {
+            const img = document.getElementById('imagePreview');
+            if (url && url.startsWith('http')) {
+                img.src = url;
+                img.classList.remove('d-none');
+            } else {
+                img.classList.add('d-none');
+            }
+        }
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: '@TempData["Success"]',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = '@Url.Action("GetAllMedicine", "Medicine")';
+                        });
+            </text>
+        }
+
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+
