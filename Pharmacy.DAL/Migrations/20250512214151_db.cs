@@ -5,7 +5,7 @@
 namespace Pharmacy.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Patient : Migration
+    public partial class db : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

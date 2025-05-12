@@ -12,8 +12,8 @@ using Pharmacy.DAL.DB;
 namespace Pharmacy.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250512195918_Patient")]
-    partial class Patient
+    [Migration("20250512214151_db")]
+    partial class db
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
