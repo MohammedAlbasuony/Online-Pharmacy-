@@ -64,11 +64,19 @@
                                 }
                             </td>
                             <td>
-                                <div class="btn-group" role="group">
-                                    <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-warning btn-sm">Edit</a>
-                                    <button onclick="confirmDelete('@Url.Action("DeleteMedicine", new { id = medicine.MedicineID })')" class="btn btn-outline-danger btn-sm">Delete</button>
-                                </div>
+                                @if (User.IsInRole("Doctor"))
+                                {
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-warning btn-sm">Edit</a>
+                                        <button onclick="confirmDelete('@Url.Action("DeleteMedicine", new { id = medicine.MedicineID })')" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
                             </td>
+
                         </tr>
                     }
                 </tbody>
