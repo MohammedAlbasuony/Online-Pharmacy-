@@ -13,8 +13,12 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-primary">Medicine List</h2>
-        <a asp-action="AddMedicine" class="btn btn-primary shadow">+ Add New Medicine</a>
+        @if (User.IsInRole("Doctor"))
+        {
+            <a asp-action="AddMedicine" class="btn btn-primary shadow">+ Add New Medicine</a>
+        }
     </div>
+
 
     @if (Model != null && Model.Any())
     {
