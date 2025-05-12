@@ -63,7 +63,7 @@
                         {
                             <li><a href="@Url.Action("Index", "Doctor")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Doctor" ? "active" : "")">Dashboard</a></li>
                             <li><a href="@Url.Action("Patients", "Doctor")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Patients" ? "active" : "")">Patients</a></li>
-                            <li><a href="@Url.Action("Prescriptions", "Doctor")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Prescriptions" ? "active" : "")">Prescriptions</a></li>
+                            <li><a href="@Url.Action("Index", "Consultation")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Consultation" ? "active" : "")">Consultations</a></li>
                             <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
                         }
 
