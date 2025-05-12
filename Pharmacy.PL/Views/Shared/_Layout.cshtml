@@ -115,9 +115,13 @@
                             <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">My Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form id="logoutForm" class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "form-inline", id = "logoutForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
                                     <button type="submit" class="dropdown-item">Logout</button>
-                                </form>
+                                }
+
+
                             </li>
                         </ul>
                     </div>

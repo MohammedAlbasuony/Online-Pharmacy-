@@ -121,8 +121,9 @@ namespace Pharmacy.PL.Controllers
             {
                 return View(model);
             }
+            await signInManager.SignInAsync(user, isPersistent: false);
+            return RedirectToAction("Index", "Home");
 
-             return RedirectToAction("Index", "Home");
               
         }
         [HttpGet]
