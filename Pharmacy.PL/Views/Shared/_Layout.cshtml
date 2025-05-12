@@ -61,7 +61,7 @@
 
                         @if (User.IsInRole("Doctor"))
                         {
-                            <li><a href="@Url.Action("Index", "Doctor")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Doctor" ? "active" : "")">Dashboard</a></li>
+                            @* <li><a href="@Url.Action("Index", "Doctor")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Doctor" ? "active" : "")">Dashboard</a></li> *@
                             <li><a href="@Url.Action("Patients", "Doctor")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Patients" ? "active" : "")">Patients</a></li>
                             <li><a href="@Url.Action("Index", "Consultation")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Consultation" ? "active" : "")">Consultations</a></li>
                             <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
@@ -69,24 +69,24 @@
 
                         @if (User.IsInRole("Patient"))
                         {
-                            <li><a href="@Url.Action("Index", "Patient")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Patient" ? "active" : "")">Dashboard</a></li>
-                            <li><a href="@Url.Action("Prescriptions", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Prescriptions" ? "active" : "")">My Prescriptions</a></li>
-                            <li><a href="@Url.Action("Orders", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">My Orders</a></li>
+                            @* <li><a href="@Url.Action("Index", "Patient")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Patient" ? "active" : "")">Dashboard</a></li> *@
+                            @* <li><a href="@Url.Action("Prescriptions", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Prescriptions" ? "active" : "")">My Prescriptions</a></li> *@
+                            @* <li><a href="@Url.Action("Orders", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">My Orders</a></li> *@
                             <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
 
                         }
 
                         @if (User.IsInRole("Pharmacist"))
                         {
-                            <li><a href="@Url.Action("Index", "Pharmacist")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Pharmacist" ? "active" : "")">Dashboard</a></li>
-                            <li><a href="@Url.Action("Inventory", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Inventory" ? "active" : "")">Inventory</a></li>
-                            <li><a href="@Url.Action("Orders", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">Orders</a></li>
+                            @* <li><a href="@Url.Action("Index", "Pharmacist")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Pharmacist" ? "active" : "")">Dashboard</a></li> *@
+                            @* <li><a href="@Url.Action("Inventory", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Inventory" ? "active" : "")">Inventory</a></li> *@
+                            @* <li><a href="@Url.Action("Orders", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">Orders</a></li> *@
                             <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
 
                         }
 
-                        <li><a href="#About" class="@(ViewContext.RouteData.Values["action"].ToString() == "About" ? "active" : "")">About</a></li>
-                        <li><a href="#Contact" class="@(ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")">Contact</a></li>
+                        @* <li><a href="#About" class="@(ViewContext.RouteData.Values["action"].ToString() == "About" ? "active" : "")">About</a></li> *@
+                        @* <li><a href="#Contact" class="@(ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")">Contact</a></li> *@
                         
                        
                             <div class="d-flex align-items-center me-3">
