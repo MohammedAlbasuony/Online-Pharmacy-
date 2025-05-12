@@ -104,6 +104,7 @@
                 @if (!User.Identity.IsAuthenticated)
                 {
                     <a class="cta-btn" href="@Url.Action("Login", "Account")">Login</a>
+                    <a class="cta-btn" href="@Url.Action("Register", "Account")">Register</a>
                 }
                 else
                 {
