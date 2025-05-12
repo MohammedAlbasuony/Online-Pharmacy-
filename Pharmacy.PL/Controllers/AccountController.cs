@@ -35,14 +35,7 @@ namespace Pharmacy.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVm model)
         {
-            //begin transaction  
-            //first save type of user (doctor , pa ,)
-            //db.SaveChanges
-            //save application user (userType)
-            //if true commi or false rollback
-
             var userExists = await userManager.FindByEmailAsync(model.Email);
-
             if (userExists != null)
             {
                 return BadRequest("User already exists");
@@ -52,42 +45,89 @@ namespace Pharmacy.PL.Controllers
             {
                 return View(model);
             }
-            var patient = new Patient()
+
+            int? userTypeId = null;
+            string role = model.UserType.ToString();
+
+            // Start transaction if needed
+            using var transaction = await _db.Database.BeginTransactionAsync();
+            try
             {
-                Name = model.Name,
-                MedicalHistory = "No medical history",
-                
-            };
-            // Add patient to the database
-             _db.Patients.Add(patient);
-             await _db.SaveChangesAsync();
-            var user = new ApplicationUser()
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FullName = model.Name,
-                UserType = EnUserType.Patient,
-                UserTypeID = patient.PatientID
-            };
-            var result = await userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
-            {
-                // Add user to the Patient role
-                if (!await roleManager.RoleExistsAsync("Patient"))
+                ApplicationUser user = new ApplicationUser
                 {
-                    await roleManager.CreateAsync(new IdentityRole("Patient"));
+                    UserName = model.Name,
+                    Email = model.Email,
+                    FullName = model.Name,
+                    UserType = model.UserType
+                };
+
+                switch (model.UserType)
+                {
+                    case EnUserType.Patient:
+                        var patient = new Patient
+                        {
+                            Name = model.Name,
+                            MedicalHistory = "No medical history"
+                        };
+                        _db.Patients.Add(patient);
+                        await _db.SaveChangesAsync();
+                        userTypeId = patient.PatientID;
+                        break;
+
+                    case EnUserType.Doctor:
+                        var doctor = new Doctor
+                        {
+                            Name = model.Name,
+                        };
+                        _db.Doctors.Add(doctor);
+                        await _db.SaveChangesAsync();
+                        userTypeId = doctor.DoctorID;
+                        break;
+
+                    case EnUserType.Pharmacist:
+                        var pharmacist = new Pharmacist
+                        {
+                            Name = model.Name
+                        };
+                        _db.Pharmacists.Add(pharmacist);
+                        await _db.SaveChangesAsync();
+                        userTypeId = pharmacist.PharmacistID;
+                        break;
+
+                    default:
+                        ModelState.AddModelError("", "Invalid user type");
+                        return View(model);
                 }
-                await userManager.AddToRoleAsync(user, "Patient");
-                
+
+                user.UserTypeID = userTypeId.Value;
+                var result = await userManager.CreateAsync(user, model.Password);
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+
+                await userManager.AddToRoleAsync(user, role);
+
+                await transaction.CommitAsync();
                 return RedirectToAction("Login", "Account");
             }
-            foreach (var error in result.Errors)
+            catch
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                await transaction.RollbackAsync();
+                ModelState.AddModelError("", "An error occurred while creating your account.");
+                return View(model);
             }
-            return View(model);
-
         }
+
 
         [HttpGet]
         public IActionResult Login()

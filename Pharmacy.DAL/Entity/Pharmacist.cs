@@ -10,7 +10,7 @@ namespace Pharmacy.DAL.Entity
     {
         public int PharmacistID { get; set; }
         public string Name { get; set; }
-        public string LicenseNumber { get; set; }
+        public string? LicenseNumber { get; set; }
        
     }
 }
