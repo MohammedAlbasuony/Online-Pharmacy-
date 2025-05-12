@@ -41,7 +41,7 @@ else
                     <td>@item.Dosage</td>
                     <td>@item.UnitPrice.ToString("C")</td>
                     <td>@item.Quantity</td>
-                    <td>@(item.UnitPrice * item.Quantity).ToString("C")</td>
+                    <td>@(item.UnitPrice * item.Quantity)</td>
                     <td>
                         <a asp-action="RemoveFromCart" asp-route-medicationId="@item.MedicationId" class="btn btn-sm btn-danger">Remove</a>
                     </td>
