@@ -10,7 +10,7 @@ namespace Pharmacy.DAL.Repo.Abstraction
     public interface IPatientsRepo
     {
         Task<bool> AddAsync(Patient patient);
-        Task<bool> DeleteAsync(string id);
+        Task<bool> DeleteAsync(int id);
         Task<List<Patient>> GetAllAsync();
         Task<Patient> GetByIdAsync(string id);
         Task<bool> UpdateAsync(Patient patient);

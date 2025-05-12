@@ -46,11 +46,12 @@ namespace Pharmacy.PL.Controllers
             return View(patientVM);
         }
 
-        public async Task<IActionResult> DeletePatient(string id)
+        public async Task<IActionResult> DeletePatient(int id)
         {
             await _patientService.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("GetAllPatient", new { deleted = "true" });
         }
+
 
         [HttpGet]
         public async Task<IActionResult> UpdatePatient(string id)

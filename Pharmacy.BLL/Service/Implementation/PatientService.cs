@@ -24,7 +24,7 @@ namespace Pharmacy.BLL.Service.Implementation
             return await _patientsRepo.AddAsync(patient);
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(int id)
         {
             return await _patientsRepo.DeleteAsync(id);
         }

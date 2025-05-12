@@ -34,14 +34,14 @@ namespace Pharmacy.DAL.Repo.Implementation
             }
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
-                var user = await _DBcontext.Users.FindAsync(id);
-                if (user != null)
+                var patient = await _DBcontext.Patients.FindAsync(id); // Corrected the double dot and ensured proper usage of FindAsync.  
+                if (patient != null)
                 {
-                    _DBcontext.Users.Remove(user); // Hard delete
+                    _DBcontext.Patients.Remove(patient); // Corrected the DbSet reference to Patients instead of Users.  
                     await _DBcontext.SaveChangesAsync();
                     return true;
                 }
@@ -49,7 +49,7 @@ namespace Pharmacy.DAL.Repo.Implementation
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting user: {ex.Message}");
+                Console.WriteLine($"Error deleting patient: {ex.Message}");
                 return false;
             }
         }
