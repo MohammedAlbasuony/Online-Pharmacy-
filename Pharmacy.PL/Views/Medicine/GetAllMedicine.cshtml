@@ -18,6 +18,12 @@
             <a asp-action="AddMedicine" class="btn btn-primary shadow">+ Add New Medicine</a>
         }
     </div>
+    <form method="get" asp-action="GetAllMedicine" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="searchQuery" value="@ViewBag.CurrentFilter" class="form-control" placeholder="Search by name, category, manufacturer..." />
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+        </div>
+    </form>
 
 
     @if (Model != null && Model.Any())
