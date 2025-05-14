@@ -8,18 +8,24 @@ using System.Threading.Tasks;
 using Pharmacy.DAL.DB;
 using X.PagedList.Extensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
+using Pharmacy.BLL.Service.Abstraction;
 
 namespace Pharmacy.PL.Controllers
 {
     public class ConsultationController : Controller
     {
+        private readonly IPatientService _patientService;
+        
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ConsultationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ConsultationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IPatientService patientService)
         {
             _context = context;
             _userManager = userManager;
+            _patientService = patientService;
+
         }
 
         // GET: /consultation
@@ -84,21 +90,36 @@ namespace Pharmacy.PL.Controllers
         public async Task<IActionResult> Create(Consultation model)
         {
             if (!ModelState.IsValid)
-                return View(model);
-
-            // Ensure the model.PatientID (which is the selected PatientID) is valid
-            var patient = await _context.Patients.FindAsync(model.PatientId); // Use PatientID to find the patient
-
-            if (patient != null)
             {
-                model.PatientId = patient.PatientID;
-                model.PatientName = patient.Name;
-                _context.Consultations.Add(model);
-                await _context.SaveChangesAsync();
+                // If the model state is invalid, return the view with the model to display validation errors
+                return View(model);
             }
 
+            // Ensure the model.PatientId (which is the selected PatientId) is valid
+            var patient = await _context.Patients.FindAsync(model.PatientId);
+
+            // Check if the patient exists
+            if (patient == null)
+            {
+                // Add a model error if the patient was not found
+                ModelState.AddModelError("PatientId", "The selected patient could not be found.");
+
+                // Return the view with the model so the user can correct their input
+                return View(model);
+            }
+
+            // If patient exists, populate the model fields
+            model.PatientId = patient.PatientID;
+            model.PatientName = patient.Name;
+
+            // Add the consultation to the context and save
+            _context.Consultations.Add(model);
+            await _context.SaveChangesAsync();
+
+            // Redirect to the Index page after successful save
             return RedirectToAction("Index");
         }
+
 
 
 
@@ -122,9 +143,37 @@ namespace Pharmacy.PL.Controllers
 
             if (!ModelState.IsValid)
                 return View(model);
+            model.PatientId = model.Id;
 
-            _context.Consultations.Update(model);
-            await _context.SaveChangesAsync();
+            // Ensure that the PatientId exists in the Patients table
+            var patient = await _patientService.GetByPatientIdAsync(model.PatientId);
+            if (patient == null)
+            {
+                // If the patient doesn't exist, add an error to the ModelState and return the view
+                ModelState.AddModelError("PatientId", "The selected patient does not exist.");
+                return View(model);
+            }
+
+            // If everything is valid, update the consultation
+            try
+            {
+                _context.Consultations.Update(model);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Handle DbUpdateException if a foreign key constraint violation occurs
+                if (dbEx.InnerException is SqlException sqlEx && sqlEx.Number == 547) // Foreign key violation
+                {
+                    ModelState.AddModelError("", "The operation violated a foreign key constraint. Please ensure all references are correct.");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "An error occurred while saving the consultation. Please try again.");
+                }
+                return View(model);
+            }
+
             return RedirectToAction("Index");
         }
 

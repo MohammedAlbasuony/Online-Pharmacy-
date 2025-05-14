@@ -14,100 +14,100 @@
 <style>
     /* Custom Styles */
     .medicine-card {
-        border: none;
-        border-radius: 20px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        opacity: 0.9;
+    border: none;
+    border-radius: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    opacity: 0.9;
     }
 
-        .medicine-card:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            opacity: 1;
-        }
+    .medicine-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 1;
+    }
 
     .card-title {
-        font-weight: 600;
-        font-size: 1.2rem;
-        transition: transform 0.3s ease, color 0.3s ease;
+    font-weight: 600;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease, color 0.3s ease;
     }
 
     .medicine-card:hover .card-title {
-        transform: translateX(5px);
-        color: #0d6efd;
+    transform: translateX(5px);
+    color: #0d6efd;
     }
 
     .card-body::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none; /* 👈 Add this line */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* 👈 Add this line */
     }
 
     .medicine-card:hover .card-body::after {
-        opacity: 1;
+    opacity: 1;
     }
 
     .btn-sm {
-        font-size: 0.85rem;
-        border-radius: 10px;
-        transition: background-color 0.3s ease;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
     }
 
-        .btn-sm:hover {
-            background-color: #0d6efd;
-            color: white;
-        }
+    .btn-sm:hover {
+    background-color: #0d6efd;
+    color: white;
+    }
 
     .pagination .page-item .page-link {
-        border-radius: 10px;
-        font-size: 1.1rem;
-        padding: 0.75rem 1.25rem;
-        transition: background-color 0.3s ease, transform 0.3s ease;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.25rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
     .pagination .page-item:hover .page-link {
-        background-color: #0d6efd;
-        color: white;
-        transform: scale(1.1);
+    background-color: #0d6efd;
+    color: white;
+    transform: scale(1.1);
     }
 
     .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        color: white;
-        border-color: #0d6efd;
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
     }
 
     .pagination .page-item.disabled .page-link {
-        color: #6c757d;
+    color: #6c757d;
     }
 
     .input-group input {
-        border-radius: 12px 0 0 12px;
+    border-radius: 12px 0 0 12px;
     }
 
     .input-group .btn {
-        border-radius: 0 12px 12px 0;
+    border-radius: 0 12px 12px 0;
     }
 
     .no-img {
-        height: 200px;
-        background-color: #f8f9fa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #aaa;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
-        font-weight: 500;
+    height: 200px;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    font-weight: 500;
     }
 </style>
 
@@ -146,10 +146,13 @@
                                     @Html.DisplayFor(modelItem => item.Status)
                                 </span>
                             </p>
-                            <div class="btn-group d-flex justify-content-between">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@item.Id)">Delete</button>
-                            </div>
+                            @if (User.IsInRole("Doctor"))
+                            {
+                                <div class="btn-group d-flex justify-content-between">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@item.Id)">Delete</button>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
