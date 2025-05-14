@@ -84,40 +84,33 @@ namespace Pharmacy.PL.Controllers
         }
 
 
-        // POST: /consultation/create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Consultation model)
         {
             if (!ModelState.IsValid)
             {
-                // If the model state is invalid, return the view with the model to display validation errors
+                // Repopulate dropdown when validation fails
+                ViewBag.Patients = new SelectList(await _context.Patients.ToListAsync(), "PatientID", "Name");
                 return View(model);
             }
 
-            // Ensure the model.PatientId (which is the selected PatientId) is valid
             var patient = await _context.Patients.FindAsync(model.PatientId);
-
-            // Check if the patient exists
-            if (patient == null)
+            if (patient != null)
             {
-                // Add a model error if the patient was not found
-                ModelState.AddModelError("PatientId", "The selected patient could not be found.");
+                model.PatientId = patient.PatientID;
+                model.PatientName = patient.Name;
 
-                // Return the view with the model so the user can correct their input
-                return View(model);
+                _context.Consultations.Add(model);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index");
             }
 
-            // If patient exists, populate the model fields
-            model.PatientId = patient.PatientID;
-            model.PatientName = patient.Name;
-
-            // Add the consultation to the context and save
-            _context.Consultations.Add(model);
-            await _context.SaveChangesAsync();
-
-            // Redirect to the Index page after successful save
-            return RedirectToAction("Index");
+            // Handle case if patient was not found
+            ModelState.AddModelError("PatientId", "Selected patient does not exist.");
+            ViewBag.Patients = new SelectList(await _context.Patients.ToListAsync(), "PatientID", "Name");
+            return View(model);
         }
 
 

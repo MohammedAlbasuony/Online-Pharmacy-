@@ -98,7 +98,8 @@
                                     <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
                                 </li>
                             }
-
+                             @if (User.IsInRole("Patient"))
+                             {
                             <li class="nav-item">
                                 <a href="@Url.Action("Index", "Cart")" class="nav-link nav-cart-link @(currentController == "Cart" ? "active text-primary fw-bold" : "")">
                                     <i class="fas fa-shopping-cart cart-icon"></i>
@@ -112,7 +113,7 @@
                                     }
                                 </a>
                             </li>
-
+                            }
 
 
 

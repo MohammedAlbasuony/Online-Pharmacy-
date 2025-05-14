@@ -110,6 +110,8 @@ namespace Pharmacy.DAL.Repo.Implementation
 
                 if (result != null)
                 {
+                    result.Name = patient.Name;
+                    result.MedicalHistory = patient.MedicalHistory;
                     await _DBcontext.SaveChangesAsync();
                     return true;
                 }
