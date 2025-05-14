@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Pharmacy.BLL.ViewModels
+@model StatsViewModel
+
+@{
     ViewData["Title"] = "Home";
     ViewData["BodyClass"] = "index-page";
 }
@@ -133,45 +136,39 @@
 <section id="stats" class="stats section">
     <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row gy-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-item d-flex align-items-center w-100 h-100">
-                    <i class="fas fa-user-md flex-shrink-0"></i>
-                    <div>
-                        <span data-purecounter-start="0" data-purecounter-end="50" data-purecounter-duration="1" class="purecounter"></span>
-                        <p>Doctors</p>
+            <div class="container">
+                <div class="row gy-4 justify-content-center">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stats-item d-flex align-items-center w-100 h-100">
+                            <i class="fas fa-user-md flex-shrink-0"></i>
+                            <div>
+                                <span data-purecounter-start="0" data-purecounter-end="@Model.DoctorCount" data-purecounter-duration="1" class="purecounter"></span>
+                                <p>Doctors</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-item d-flex align-items-center w-100 h-100">
-                    <i class="fas fa-pills flex-shrink-0"></i>
-                    <div>
-                        <span data-purecounter-start="0" data-purecounter-end="25" data-purecounter-duration="1" class="purecounter"></span>
-                        <p>Pharmacists</p>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stats-item d-flex align-items-center w-100 h-100">
+                            <i class="fas fa-pills flex-shrink-0"></i>
+                            <div>
+                                <span data-purecounter-start="0" data-purecounter-end="@Model.PharmacistCount" data-purecounter-duration="1" class="purecounter"></span>
+                                <p>Pharmacists</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-item d-flex align-items-center w-100 h-100">
-                    <i class="fas fa-users flex-shrink-0"></i>
-                    <div>
-                        <span data-purecounter-start="0" data-purecounter-end="5000" data-purecounter-duration="1" class="purecounter"></span>
-                        <p>Patients</p>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stats-item d-flex align-items-center w-100 h-100">
+                            <i class="fas fa-users flex-shrink-0"></i>
+                            <div>
+                                <span data-purecounter-start="0" data-purecounter-end="@Model.PatientCount" data-purecounter-duration="1" class="purecounter"></span>
+                                <p>Patients</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-item d-flex align-items-center w-100 h-100">
-                    <i class="fas fa-prescription flex-shrink-0"></i>
-                    <div>
-                        <span data-purecounter-start="0" data-purecounter-end="15000" data-purecounter-duration="1" class="purecounter"></span>
-                        <p>Prescriptions</p>
-                    </div>
-                </div>
-            </div>
+            </div>           
         </div>
     </div>
 </section>
