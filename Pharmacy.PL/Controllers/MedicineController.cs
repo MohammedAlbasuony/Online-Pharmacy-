@@ -18,10 +18,23 @@ namespace Pharmacy.PL.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> GetAllMedicine(int page = 1)
+        public async Task<IActionResult> GetAllMedicine(string searchQuery, int page = 1)
         {
-            int pageSize = 10;  // Define the page size
-            var medicines = await _medicineService.GetAllAsync(); // Assuming GetAllAsync() returns a List
+            int pageSize = 12;  // Define the page size
+            var medicines = await _medicineService.GetAllAsync();
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.ToLower();
+
+                medicines = medicines.Where(m =>
+                    m.Name.ToLower().Contains(searchQuery) ||
+                    m.Category.ToLower().Contains(searchQuery) ||
+                    m.Manufacturer.ToLower().Contains(searchQuery) ||
+                    m.Uses.ToLower().Contains(searchQuery) ||
+                    m.SideEffects.ToLower().Contains(searchQuery)).ToList();
+            }
+
+            ViewBag.CurrentFilter = searchQuery;
             var pagedMedicines = medicines.ToPagedList(page, pageSize); // Paginate the list
 
             return View(pagedMedicines); // Pass the paginated result to the view
@@ -32,6 +45,15 @@ namespace Pharmacy.PL.Controllers
             var result = await _medicineService.GetByIdAsync(id);
             return View(result);
         }
+        public async Task<IActionResult> MedicineDetails(int id)
+        {
+            var medicine = await _medicineService.GetByIdAsync(id); // Replace with your actual service
+            if (medicine == null)
+                return NotFound();
+
+            return View(medicine);
+        }
+
 
         [HttpGet]
         public IActionResult AddMedicine()

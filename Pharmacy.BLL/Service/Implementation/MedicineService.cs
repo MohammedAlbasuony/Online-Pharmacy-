@@ -78,7 +78,6 @@ namespace Pharmacy.BLL.Service.Implementation
             return medicineViewModels;
         }
 
-        // Get a customer by id
         public async Task<UpdateMedicineVM> GetByIdAsync(int id)
         {
             if (id != 0)

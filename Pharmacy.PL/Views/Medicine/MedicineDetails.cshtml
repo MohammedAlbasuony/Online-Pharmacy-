@@ -1,0 +1,146 @@
+﻿@model Pharmacy.BLL.ViewModels.MedicineVM.UpdateMedicineVM
+
+@{
+    ViewData["Title"] = "Medicine Details";
+}
+
+<!-- Modern Styling -->
+<style>
+    .medicine-details-card {
+        border-radius: 16px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        background-color: #fff;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+        overflow: hidden;
+    }
+
+        .medicine-details-card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .medicine-details-card img {
+            border-radius: 12px;
+            object-fit: contain; /* Ensures the image fits without distortion */
+            max-height: 300px; /* Adjusted to a smaller height for better fit */
+            width: 100%;
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+
+        .medicine-details-card h2 {
+            color: #007BFF;
+            font-size: 2.25rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .medicine-details-card ul {
+            list-style: none;
+            padding-left: 0;
+            font-size: 1.1rem;
+        }
+
+            .medicine-details-card ul li {
+                padding: 1rem;
+                border-bottom: 1px solid #eee;
+                color: #555;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+                .medicine-details-card ul li strong {
+                    font-weight: 600;
+                    color: #333;
+                }
+
+    .btn-modern {
+        display: inline-block;
+        background-color: #007BFF;
+        color: #fff;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-top: 1.5rem;
+    }
+
+        .btn-modern:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+    .medicine-details-card .back-btn {
+        background-color: #6c757d;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        color: #fff;
+        text-transform: uppercase;
+        font-weight: 500;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        margin-top: 1.5rem;
+    }
+
+        .medicine-details-card .back-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+</style>
+
+<div class="container mt-5">
+    <div class="medicine-details-card mx-auto" style="max-width: 800px;">
+        <h2>@Model.Name</h2>
+
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid" />
+        }
+
+        <ul>
+            <li>
+                <strong>Category:</strong>
+                <span>@Model.Category</span>
+            </li>
+            <li>
+                <strong>Price:</strong>
+                <span>@Model.Price EGP</span>
+            </li>
+            <li>
+                <strong>Stock Quantity:</strong>
+                <span>@Model.StockQuantity</span>
+            </li>
+            <li>
+                <strong>Manufacturer:</strong>
+                <span>@Model.Manufacturer</span>
+            </li>
+            <li>
+                <strong>Expiry Date:</strong>
+                <span>@Model.ExpiryDate.ToShortDateString()</span>
+            </li>
+            <li>
+                <strong>Requires Prescription:</strong>
+                <span>@(Model.RequiresPrescription ? "Yes" : "No")</span>
+            </li>
+            <li>
+                <strong>Uses:</strong>
+                <span>@Model.Uses</span>
+            </li>
+            <li>
+                <strong>Side Effects:</strong>
+                <span>@Model.SideEffects</span>
+            </li>
+        </ul>
+
+        <div class="text-center">
+            <a asp-action="GetAllMedicine" class="btn-modern back-btn">← Back to List</a>
+        </div>
+    </div>
+</div>

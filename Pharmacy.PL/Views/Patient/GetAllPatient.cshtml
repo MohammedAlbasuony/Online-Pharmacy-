@@ -12,6 +12,10 @@
         </a>
     </div>
 
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm" placeholder="🔍 Search patients by name or history..." />
+    </div>
+
     @if (!Model.Any())
     {
         <div class="alert alert-info text-center">
@@ -20,14 +24,14 @@
     }
     else
     {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div id="patientCards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @foreach (var patient in Model)
             {
-                <div class="col">
+                <div class="col patient-card">
                     <div class="card h-100 shadow-sm border-0">
                         <div class="card-body">
-                            <h5 class="card-title text-primary">@patient.Name</h5>
-                            <p class="card-text text-muted">
+                            <h5 class="card-title text-primary patient-name">@patient.Name</h5>
+                            <p class="card-text text-muted patient-history">
                                 <strong>Medical History:</strong> <br />
                                 @patient.MedicalHistory
                             </p>
@@ -36,7 +40,6 @@
                             <a href="#" class="btn btn-outline-danger btn-sm" onclick="confirmDelete('@patient.PatientID')">
                                 <i class="bi bi-trash"></i> Delete
                             </a>
-
                         </div>
                     </div>
                 </div>
@@ -72,7 +75,7 @@
             });
         }
 
-        // Success alert on deletion if redirected back
+        // Success alert if redirected after deletion
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get("deleted") === "true") {
             Swal.fire({
@@ -83,5 +86,19 @@
                 showConfirmButton: false
             });
         }
+
+        // Dynamic search functionality
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const searchValue = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll(".patient-card");
+
+            cards.forEach(card => {
+                const name = card.querySelector(".patient-name").textContent.toLowerCase();
+                const history = card.querySelector(".patient-history").textContent.toLowerCase();
+                const isVisible = name.includes(searchValue) || history.includes(searchValue);
+
+                card.style.display = isVisible ? "block" : "none";
+            });
+        });
     </script>
 }

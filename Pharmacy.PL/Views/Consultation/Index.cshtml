@@ -7,8 +7,109 @@
 }
 
 <!-- SweetAlert2 -->
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    /* Custom Styles */
+    .medicine-card {
+        border: none;
+        border-radius: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        opacity: 0.9;
+    }
+
+        .medicine-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            opacity: 1;
+        }
+
+    .card-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .medicine-card:hover .card-title {
+        transform: translateX(5px);
+        color: #0d6efd;
+    }
+
+    .card-body::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none; /* 👈 Add this line */
+    }
+
+    .medicine-card:hover .card-body::after {
+        opacity: 1;
+    }
+
+    .btn-sm {
+        font-size: 0.85rem;
+        border-radius: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-sm:hover {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+    .pagination .page-item .page-link {
+        border-radius: 10px;
+        font-size: 1.1rem;
+        padding: 0.75rem 1.25rem;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .pagination .page-item:hover .page-link {
+        background-color: #0d6efd;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+    }
+
+    .input-group input {
+        border-radius: 12px 0 0 12px;
+    }
+
+    .input-group .btn {
+        border-radius: 0 12px 12px 0;
+    }
+
+    .no-img {
+        height: 200px;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #aaa;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        font-weight: 500;
+    }
+</style>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -18,62 +119,55 @@
         </a>
     </div>
 
-    @if (Model != null && Model.Any())
+    <div class="input-group mb-4">
+        <input type="text" id="searchBox" class="form-control" placeholder="Search by name, date, type or status..." />
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+    </div>
+
+
+    @if (Model?.Any() == true)
     {
-        <div class="table-responsive rounded shadow-sm">
-            <table class="table table-hover table-bordered align-middle text-center">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Patient</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@Html.DisplayFor(modelItem => item.PatientName)</td>
-                            <td>@item.Date.ToString("MMM dd, yyyy")</td>
-                            <td>@item.Time.ToString(@"hh\:mm")</td>
-                            <td>@Html.DisplayFor(modelItem => item.Type)</td>
-                            <td>
-                                <span class="badge
-                                    @(item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Scheduled ? "bg-warning text-dark" :
-                                      item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Completed ? "bg-success" :
-                                      item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Cancelled ? "bg-danger" :
-                                      "bg-secondary")">
+        <div class="row" id="consultation-list">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4 consultation-item" data-patient-name="@item.PatientName">
+                    <div class="card medicine-card shadow-lg border-0 rounded-3 position-relative">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary fw-bold">@item.PatientName</h5>
+                            <p class="card-text text-muted">
+                                <strong>Date:</strong> @item.Date.ToString("MMM dd, yyyy")<br />
+                                <strong>Time:</strong> @item.Time.ToString(@"hh\:mm")<br />
+                                <strong>Type:</strong> @Html.DisplayFor(modelItem => item.Type)
+                            </p>
+                            <p class="card-text">
+                                <span class="badge @(item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Scheduled ? "bg-warning text-dark" : item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Completed ? "bg-success" : item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Cancelled ? "bg-danger" : "bg-secondary")">
                                     @Html.DisplayFor(modelItem => item.Status)
                                 </span>
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
-                                    <form method="post" action="@Url.Action("Delete", new { id = item.Id })" id="deleteForm_@item.Id" style="display:inline;">
-                                        @Html.AntiForgeryToken()
-                                        <button type="button" onclick="confirmDelete('@item.Id')" class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                            </p>
+                            <div class="btn-group d-flex justify-content-between">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@item.Id)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
 
+        <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
-            <nav>
-                <ul class="pagination pagination-sm shadow-sm">
-                    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
+            <nav aria-label="Consultations Pagination">
+                <ul class="pagination pagination-lg">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">&laquo;</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                    }
 
                     @for (var i = 1; i <= Model.PageCount; i++)
                     {
@@ -82,11 +176,16 @@
                         </li>
                     }
 
-                    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">&raquo;</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                    }
                 </ul>
             </nav>
         </div>
@@ -99,8 +198,9 @@
     }
 </div>
 
+<!-- Required JS -->
 <script>
-        function confirmDelete(itemId) {
+    function confirmDelete(itemId) {
         Swal.fire({
             title: 'Are you sure?',
             text: "This consultation will be permanently deleted!",
@@ -111,8 +211,20 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Submit the form after confirmation
-                document.getElementById("deleteForm_" + itemId).submit();
+                // Submit form via POST
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '@Url.Action("Delete", "Consultation")' + '?id=' + itemId;
+
+                // Add anti-forgery token
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)[1];
+
+                form.appendChild(tokenInput);
+                document.body.appendChild(form);
+                form.submit();
             }
         });
     }
@@ -129,5 +241,20 @@
                 });
         </text>
     }
+
+    document.getElementById("searchBox").addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase();
+        const cards = document.querySelectorAll(".medicine-card");
+
+        cards.forEach(card => {
+            const name = card.querySelector(".card-title")?.textContent.toLowerCase() || "";
+            const date = card.querySelector(".card-text")?.innerText.match(/Date:\s*(.+)/i)?.[1]?.toLowerCase() || "";
+            const type = card.querySelector(".card-text")?.innerText.match(/Type:\s*(.+)/i)?.[1]?.toLowerCase() || "";
+            const status = card.querySelector(".badge")?.textContent.toLowerCase() || "";
+
+            const match = [name, date, type, status].some(field => field.includes(searchTerm));
+            card.parentElement.style.display = match ? "block" : "none";
+        });
+    });
 
 </script>

@@ -1,17 +1,18 @@
 ﻿@using Pharmacy.PL.ViewModels
 @model LoginVm
+
 @{
     ViewData["Title"] = "Login";
     ViewData["BodyClass"] = "login-page";
 }
 
-<section class="section">
+<section class="py-5" style="background: linear-gradient(135deg, #74ebd5, #9face6); min-height: 100vh;">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-5">
-                <div class="card">
-                    <div class="card-body p-4 p-md-5">
-                        <h3 class="mb-4 text-center">Sign In to Your Account</h3>
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-10 col-lg-6">
+                <div class="card shadow-lg border-0 rounded-4" style="backdrop-filter: blur(16px); background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3);">
+                    <div class="card-body p-5">
+                        <h3 class="mb-4 text-center fw-bold text-white">Sign In to Your Account</h3>
 
                         @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
                         {
@@ -21,47 +22,45 @@
                         }
 
                         <form asp-action="Login" asp-controller="Account" method="post">
-                            <input type="hidden" />
-
                             <div class="mb-4">
-                                <label asp-for="Email" class="form-label">Email</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
-                                </div>
-                                <span asp-validation-for="Email" class="text-danger"></span>
+                                <label asp-for="Email" class="form-label text-white">Email</label>
+                                <input asp-for="Email" class="form-control rounded-pill" placeholder="example@domain.com" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
                             </div>
 
                             <div class="mb-4">
-                                <label asp-for="Password" class="form-label">Password</label>
+                                <label asp-for="Password" class="form-label text-white">Password</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                                    <input asp-for="Password" class="form-control rounded-start-pill" placeholder="********" />
+                                    <button class="btn btn-outline-light toggle-password rounded-end-pill" type="button">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                 </div>
-                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
                             </div>
 
-                            <div class="mb-4 form-check">
+                            <div class="form-check mb-4">
                                 <input asp-for="RememberMe" class="form-check-input" />
-                                <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                                <label asp-for="RememberMe" class="form-check-label text-white">Remember me</label>
                             </div>
 
                             <div class="d-grid mb-4">
-                                <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill">Sign In</button>
                             </div>
 
-                            <div class="text-center mb-4">
-                                <a href="@Url.Action("ForgotPassword", "Account")" class="text-decoration-none">Forgot Password?</a>
+                            <div class="text-center mb-3">
+                                <a href="@Url.Action("ForgotPassword", "Account")" class="text-white text-decoration-none">Forgot Password?</a>
                             </div>
 
                             <div class="text-center">
-                                <p>Don't have an account? <a href="@Url.Action("Register", "Account")" class="text-decoration-none">Sign Up</a></p>
+                                <p class="mb-0 text-white">
+                                    Don't have an account?
+                                    <a href="@Url.Action("Register", "Account")" class="text-decoration-none fw-semibold text-primary">Sign Up</a>
+                                </p>
                             </div>
                         </form>
                     </div>
                 </div>
-
-                
             </div>
         </div>
     </div>
@@ -69,4 +68,18 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function () {
+                const input = this.previousElementSibling;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    input.type = 'password';
+                    this.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+        });
+    </script>
 }

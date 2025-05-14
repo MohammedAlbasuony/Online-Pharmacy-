@@ -4,33 +4,70 @@
     ViewData["Title"] = "Add Patient";
 }
 
+<style>
+    .input-with-icon {
+        position: relative;
+    }
+
+    .form-icon {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: #6c757d;
+        pointer-events: none;
+        font-size: 1rem;
+    }
+
+    .input-with-icon input,
+    .input-with-icon textarea {
+        padding-left: 2.5rem !important;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        border-color: #0d6efd;
+    }
+</style>
+
 <div class="container mt-5">
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-header bg-primary text-white rounded-top-4">
-            <h3 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i> Add New Patient</h3>
+            <h3 class="mb-0">
+                <i class="bi bi-person-plus-fill me-2"></i> Add New Patient
+            </h3>
         </div>
         <div class="card-body p-4">
             <form asp-action="AddPatient" method="post" class="needs-validation" novalidate>
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label fw-semibold"></label>
-                    <input asp-for="Name" class="form-control" placeholder="Enter patient's full name" />
-                    <span asp-validation-for="Name" class="text-danger small"></span>
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label fw-semibold">Patient Name</label>
+                    <div class="input-with-icon">
+                        <i class="bi bi-person form-icon"></i>
+                        <input asp-for="Name" class="form-control shadow-sm rounded-3" placeholder="Enter patient's full name" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger small d-block mt-1"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="MedicalHistory" class="form-label fw-semibold"></label>
-                    <textarea asp-for="MedicalHistory" class="form-control" rows="4" placeholder="Enter medical history..."></textarea>
-                    <span asp-validation-for="MedicalHistory" class="text-danger small"></span>
+                <div class="mb-4">
+                    <label asp-for="MedicalHistory" class="form-label fw-semibold">Medical History</label>
+                    <div class="input-with-icon">
+                        <i class="bi bi-journal-medical form-icon"></i>
+                        <textarea asp-for="MedicalHistory" class="form-control shadow-sm rounded-3" rows="4" placeholder="Enter medical history..."></textarea>
+                    </div>
+                    <span asp-validation-for="MedicalHistory" class="text-danger small d-block mt-1"></span>
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <a asp-action="GetAllPatient" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left-circle"></i> Back
+                    <a asp-action="GetAllPatient" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        <i class="bi bi-arrow-left-circle me-1"></i> Back
                     </a>
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-check-circle-fill"></i> Submit
+                    <button type="submit" class="btn btn-success btn-lg rounded-pill px-4">
+                        <i class="bi bi-check-circle-fill me-1"></i> Submit
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
