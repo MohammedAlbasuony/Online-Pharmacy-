@@ -54,9 +54,9 @@ namespace Pharmacy.PL.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> UpdatePatient(int id)
+        public async Task<IActionResult> UpdatePatient(string id)
         {
-            var patient = await _patientService.GetByPatientIdAsync(id);
+            var patient = await _patientService.GetByIdAsync(id);
             if (patient == null)
             {
                 return NotFound();
