@@ -9,5 +9,6 @@ namespace Pharmacy.BLL.Service.Abstraction
         Task<bool> UpdateAsync(UpdatePatientVM patient);
         Task<GetPatientByIdVM> GetByIdAsync(string id);
         Task<List<GetAllPatientssVM>> GetAllAsync();
+        Task<UpdatePatientVM> GetByPatientIdAsync(int id);
     }
 }

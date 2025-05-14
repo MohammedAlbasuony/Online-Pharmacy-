@@ -1,57 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Pharmacy.DAL;
-using Pharmacy.DAL.DB;
 using Pharmacy.DAL.Entity;
-using X.PagedList;
+using System.Linq;
+using System.Threading.Tasks;
+using Pharmacy.DAL.DB;
 using X.PagedList.Extensions;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Pharmacy.PL.Controllers
 {
     public class ConsultationController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ConsultationController(ApplicationDbContext context)
+        public ConsultationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: /consultation
         public async Task<IActionResult> Index(int page = 1)
         {
             int pageSize = 12;
-            var consultations = await _context.Consultations.OrderBy(c => c.Date).ToListAsync();
-            var pagedConsultations = consultations.ToPagedList(page, pageSize);
-            return View(pagedConsultations);
+            var user = await _userManager.GetUserAsync(User); // Get the logged-in user
+
+            // If the user is a Doctor, show all consultations
+            if (User.IsInRole("Doctor"))
+            {
+                var consultations = await _context.Consultations.OrderBy(c => c.Date).ToListAsync();
+                var pagedConsultations = consultations.ToPagedList(page, pageSize);
+                return View(pagedConsultations);
+            }
+
+            // If the user is a Patient, show only their consultations
+            if (User.IsInRole("Patient"))
+            {
+                var consultations = await _context.Consultations
+                    .Where(c => c.Patient.ApplicationUserId == user.Id) // Filter by Patient ID
+                    .OrderBy(c => c.Date)
+                    .ToListAsync();
+
+                var pagedConsultations = consultations.ToPagedList(page, pageSize);
+                return View(pagedConsultations);
+            }
+
+            return View(new List<Consultation>().ToPagedList(page, pageSize)); // Empty list if no role found
         }
-
-
-        public async Task<IActionResult> Upcoming(int page = 1)
-        {
-            int pageSize = 2;
-
-            var upcomingList = await _context.Consultations
-                .Where(c => c.Status == ConsultationStatus.Scheduled)
-                .OrderBy(c => c.Date)
-                .ToListAsync();
-
-            var pagedUpcoming = upcomingList.ToPagedList(page, pageSize);
-            return View("Index", pagedUpcoming);
-        }
-        public async Task<IActionResult> Past(int page = 1)
-        {
-            int pageSize = 2;
-
-            var pastList = await _context.Consultations
-                .Where(c => c.Status != ConsultationStatus.Scheduled)
-                .OrderByDescending(c => c.Date)
-                .ToListAsync();
-
-            var pagedPast = pastList.ToPagedList(page, pageSize);
-            return View("Index", pagedPast);
-        }
-
 
         // GET: /consultation/details/1
         public async Task<IActionResult> Details(int id)
@@ -60,14 +58,25 @@ namespace Pharmacy.PL.Controllers
             if (consult == null)
                 return NotFound();
 
+            var user = await _userManager.GetUserAsync(User); // Get the logged-in user
+
+            // Check if the logged-in user is allowed to view this consultation
+            if (User.IsInRole("Patient") && consult.Patient.ApplicationUserId != user.Id)
+            {
+                return Forbid(); // Patient can only see their own consultations
+            }
+
             return View(consult);
         }
 
         // GET: /consultation/create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var patients = await _context.Patients.ToListAsync();
+            ViewBag.Patients = new SelectList(patients, "PatientID", "Name"); // Create a dropdown list of patients
             return View();
         }
+
 
         // POST: /consultation/create
         [HttpPost]
@@ -77,10 +86,21 @@ namespace Pharmacy.PL.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            _context.Consultations.Add(model);
-            await _context.SaveChangesAsync();
+            // Ensure the model.PatientID (which is the selected PatientID) is valid
+            var patient = await _context.Patients.FindAsync(model.PatientId); // Use PatientID to find the patient
+
+            if (patient != null)
+            {
+                model.PatientId = patient.PatientID;
+                model.PatientName = patient.Name;
+                _context.Consultations.Add(model);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction("Index");
         }
+
+
 
         // GET: /consultation/edit/1
         public async Task<IActionResult> Edit(int id)
@@ -108,6 +128,7 @@ namespace Pharmacy.PL.Controllers
             return RedirectToAction("Index");
         }
 
+        // POST: /consultation/delete/1
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -122,6 +143,5 @@ namespace Pharmacy.PL.Controllers
 
             return RedirectToAction("Index");
         }
-
     }
 }

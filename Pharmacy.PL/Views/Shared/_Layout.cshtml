@@ -84,8 +84,15 @@
                                     <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
                                 </li>
                             }
-
-                            @if (User.IsInRole("Patient") || User.IsInRole("Pharmacist"))
+                            @if (User.IsInRole("Patient")){
+                                <li class="nav-item">
+                                <a class="nav-link @isActive("Consultation", "Index")" href="@Url.Action("Index", "Consultation")">Consultations</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Pharmacist"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>

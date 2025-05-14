@@ -22,11 +22,14 @@ namespace Pharmacy.DAL.Entity
     public class Consultation
     {
         public int Id { get; set; }
-        public string PatientName { get; set; }
+        public int PatientId { get; set; }  // Add this line to associate the consultation with a patient
+        public string? PatientName { get; set; }
         public DateTime Date { get; set; }
         public TimeSpan Time { get; set; }
         public ConsultationType Type { get; set; }
         public ConsultationStatus Status { get; set; }
+        // Foreign Key to Patient
+        public Patient? Patient { get; set; }  // Navigation property to the Patient entity
     }
 
 }
