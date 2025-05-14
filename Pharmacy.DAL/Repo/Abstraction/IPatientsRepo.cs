@@ -15,6 +15,6 @@ namespace Pharmacy.DAL.Repo.Abstraction
         Task<Patient> GetByIdAsync(string id);
         Task<bool> UpdateAsync(Patient patient);
 
-
+        Task<Patient> GetByPatientIdAsync(int patientId);
     }
 }

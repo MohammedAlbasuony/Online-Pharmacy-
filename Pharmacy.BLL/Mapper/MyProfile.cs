@@ -20,6 +20,11 @@ namespace Pharmacy.BLL.Mapper
             CreateMap<DAL.Entity.Patient, GetAllPatientssVM>(); // Fixed typo in GetAllPatientsVM
             CreateMap<DAL.Entity.Patient, GetPatientByIdVM>();
             CreateMap<UpdatePatientVM, DAL.Entity.Patient>();
+            CreateMap<Patient, UpdatePatientVM>()
+           .ForMember(dest => dest.PatientID, opt => opt.MapFrom(src => src.PatientID))
+           .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+           .ForMember(dest => dest.MedicalHistory, opt => opt.MapFrom(src => src.MedicalHistory));
+
         }
     }
 }

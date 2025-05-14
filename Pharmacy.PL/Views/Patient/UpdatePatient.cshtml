@@ -4,35 +4,59 @@
     ViewData["Title"] = "Update Patient";
 }
 
-<h2 class="mb-4">Update Patient</h2>
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-dark">Update Patient</h2>
 
-<form asp-action="UpdatePatient" method="post" class="needs-validation" novalidate>
-    <input type="hidden" asp-for="PatientID" />
+    <!-- Card Container with Modern Shadow and Hover Effect -->
+    <div class="card shadow-3d rounded-5 p-5 hover-card">
+        <form asp-action="UpdatePatient" method="post" class="needs-validation" novalidate>
+            <input type="hidden" asp-for="PatientID" />
 
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+            <!-- Patient Name Input -->
+            <div class="mb-4">
+                <label asp-for="Name" class="form-label text-dark">Patient Name</label>
+                <input asp-for="Name" class="form-control form-control-lg p-4 rounded-3 border-0 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Enter patient's name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <!-- Medical History Input -->
+            <div class="mb-4">
+                <label asp-for="MedicalHistory" class="form-label text-dark">Medical History</label>
+                <textarea asp-for="MedicalHistory" class="form-control form-control-lg p-4 rounded-3 border-0 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300" rows="5" placeholder="Enter patient's medical history"></textarea>
+                <span asp-validation-for="MedicalHistory" class="text-danger"></span>
+            </div>
+
+            <!-- Buttons Container -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-4 shadow-lg hover-button transition-all duration-300">
+                    <i class="bi bi-save"></i> Update
+                </button>
+                <a asp-action="GetAllPatient" class="btn btn-outline-dark btn-lg px-5 py-3 rounded-4 shadow-lg hover-button transition-all duration-300 ms-3">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="MedicalHistory" class="form-label"></label>
-        <textarea asp-for="MedicalHistory" class="form-control"></textarea>
-        <span asp-validation-for="MedicalHistory" class="text-danger"></span>
-    </div>
-
-   
-
-    <button type="submit" class="btn btn-primary">
-        <i class="bi bi-save"></i> Update
-    </button>
-    <a asp-action="GetAllPatient" class="btn btn-secondary ms-2">
-        <i class="bi bi-arrow-left"></i> Back
-    </a>
-</form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<style>
+    /* Hover effect for the card */
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
     }
-}
+
+    /* Button hover effect */
+    .hover-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* 3D shadow for the card */
+    .shadow-3d {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.05);
+    }
+
+</style>

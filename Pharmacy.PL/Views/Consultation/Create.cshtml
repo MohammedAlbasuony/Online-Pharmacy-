@@ -60,6 +60,11 @@
                 }, 100);
             }
         });
+        document.getElementById("patientName").addEventListener("change", function() {
+            // Update the hidden PatientId field when a patient is selected
+            var selectedPatientId = this.value;
+            document.getElementById("PatientId").value = selectedPatientId;
+        });
     </script>
 }
 
@@ -77,13 +82,23 @@
                 <div class="row g-4">
 
                     <div class="col-md-6">
-                        <label asp-for="PatientName" class="form-label fw-medium">Patient Name</label>
+                        <label asp-for="PatientId" class="form-label fw-medium">Patient Name</label>
                         <div class="input-with-icon">
                             <i class="bi bi-person form-icon" aria-hidden="true"></i>
-                            <input asp-for="PatientName" class="form-control rounded-3 shadow-sm" placeholder="Enter patient name" />
+                            <select id="patientName" class="form-select rounded-3 shadow-sm">
+                                <option value="">-- Select Patient --</option>
+                                @foreach (var patient in ViewBag.Patients as SelectList)
+                                {
+                                    <option value="@patient.Value">@patient.Text</option>
+                                }
+                            </select>
                         </div>
-                        <span asp-validation-for="PatientName" class="text-danger small d-block mt-1"></span>
+                        <span asp-validation-for="PatientId" class="text-danger small d-block mt-1"></span>
+
+                        <!-- Hidden field to store PatientID -->
+                        <input type="hidden" id="PatientId" name="PatientId" />
                     </div>
+
 
                     <div class="col-md-3">
                         <label asp-for="Date" class="form-label fw-medium">Date</label>

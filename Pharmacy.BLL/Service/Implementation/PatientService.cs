@@ -39,6 +39,11 @@ namespace Pharmacy.BLL.Service.Implementation
         {
             var patient = await _patientsRepo.GetByIdAsync(id);
             return _mapper.Map<GetPatientByIdVM>(patient);
+        } 
+        public async Task<UpdatePatientVM> GetByPatientIdAsync(int id)
+        {
+            var patient = await _patientsRepo.GetByPatientIdAsync(id);
+            return _mapper.Map<UpdatePatientVM>(patient);
         }
 
         public async Task<bool> UpdateAsync(UpdatePatientVM patientVm)

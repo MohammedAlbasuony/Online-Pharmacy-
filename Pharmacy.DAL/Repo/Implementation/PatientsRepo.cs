@@ -84,12 +84,28 @@ namespace Pharmacy.DAL.Repo.Implementation
                 return new Patient();
             }
         }
+        public async Task<Patient> GetByPatientIdAsync(int patientId)
+        {
+            try
+            {
+                // Fetch the patient by PatientID and include the ApplicationUser (related data)
+                return await _DBcontext.Patients
+                    .Include(d => d.ApplicationUser) // Include related ApplicationUser
+                    .FirstOrDefaultAsync(d => d.PatientID == patientId); // Use PatientID instead of ApplicationUserId
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return null; // Or you can return a new Patient() if preferred
+            }
+        }
+
 
         public async Task<bool> UpdateAsync(Patient patient)
         {
             try
             {
-                var result = await _DBcontext.Patients.Where(d => d.ApplicationUserId == patient.ApplicationUserId).FirstOrDefaultAsync();
+                var result = await _DBcontext.Patients.Where(d => d.PatientID == patient.PatientID).FirstOrDefaultAsync();
 
 
                 if (result != null)
