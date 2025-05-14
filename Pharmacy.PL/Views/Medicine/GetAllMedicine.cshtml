@@ -10,6 +10,9 @@
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
 <!-- Custom Modern Styles -->
 <style>
     .medicine-card {
@@ -47,14 +50,6 @@
         box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
     }
 
-    .input-group input {
-        border-radius: 12px 0 0 12px;
-    }
-
-    .input-group .btn {
-        border-radius: 0 12px 12px 0;
-    }
-
     .no-img {
         height: 200px;
         background-color: #f8f9fa;
@@ -66,30 +61,33 @@
         border-top-right-radius: 20px;
         font-weight: 500;
     }
+
+    .medicine-item {
+        transition: all 0.3s ease;
+    }
 </style>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-primary fw-bold">🧪 Medicine List</h2>
-        @if (User.IsInRole("Doctor" )|| User.IsInRole("Pharmacist"))
+        @if (User.IsInRole("Doctor") || User.IsInRole("Pharmacist"))
         {
             <a asp-action="AddMedicine" class="btn btn-primary btn-shadow">+ Add New Medicine</a>
         }
     </div>
 
-    <form method="get" asp-action="GetAllMedicine" class="mb-4">
-        <div class="input-group shadow-sm">
-            <input type="text" name="searchQuery" value="@ViewBag.CurrentFilter" class="form-control" placeholder="Search by name, category, manufacturer..." />
-            <button type="submit" class="btn btn-outline-primary">Search</button>
-        </div>
-    </form>
+    <!-- Modern Search Bar -->
+    <div class="mb-4 position-relative">
+        <input type="text" id="medicineSearch" class="form-control shadow-sm ps-5 py-3 rounded-pill" placeholder="Search medicines by name, category, or manufacturer..." />
+        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5"></i>
+    </div>
 
     @if (Model != null && Model.Any())
     {
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             @foreach (var medicine in Model)
             {
-                <div class="col">
+                <div class="col medicine-item">
                     <div class="card medicine-card h-100">
                         @if (!string.IsNullOrEmpty(medicine.ImageUrl))
                         {
@@ -193,6 +191,21 @@
             }
         });
     }
+
+    // Real-time filtering
+    document.getElementById("medicineSearch").addEventListener("input", function () {
+        const normalize = str => str?.trim().toLowerCase() || "";
+        const query = normalize(this.value);
+        const items = document.querySelectorAll(".medicine-item");
+
+        items.forEach(item => {
+            const name = normalize(item.querySelector(".card-title")?.textContent);
+            const body = item.querySelector(".card-body")?.textContent || "";
+
+            const match = name.includes(query) || normalize(body).includes(query);
+            item.style.display = match ? "block" : "none";
+        });
+    });
 
     @if (TempData["DeleteSuccess"] != null)
     {

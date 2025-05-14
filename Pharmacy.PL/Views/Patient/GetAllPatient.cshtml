@@ -61,47 +61,59 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        function confirmDelete(patientId) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `/Patient/DeletePatient?id=${patientId}`;
-                }
-            });
-        }
-
-        // Success alert if redirected after deletion
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("deleted") === "true") {
-            Swal.fire({
-                title: 'Deleted!',
-                text: 'The patient has been deleted.',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        }
-
-        // Dynamic search functionality
-        document.getElementById("searchInput").addEventListener("input", function () {
-            const searchValue = this.value.toLowerCase().trim();
-            const cards = document.querySelectorAll(".patient-card");
-
-            cards.forEach(card => {
-                const name = card.querySelector(".patient-name").textContent.toLowerCase();
-                const history = card.querySelector(".patient-history").textContent.toLowerCase();
-                const isVisible = name.includes(searchValue) || history.includes(searchValue);
-
-                card.style.display = isVisible ? "block" : "none";
-            });
-        });
-    </script>
 }
+
+<script>
+    function confirmDelete(patientId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/Patient/DeletePatient?id=${patientId}`;
+            }
+        });
+    }
+
+    // Success alert
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("deleted") === "true") {
+        Swal.fire({
+            title: 'Deleted!',
+            text: 'The patient has been deleted.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+
+    // Debounce utility
+    function debounce(func, delay) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    // Dynamic search
+    const handleSearch = debounce(function () {
+        const searchValue = this.value.toLowerCase().trim();
+        const cards = document.querySelectorAll(".patient-card");
+
+        cards.forEach(card => {
+            const name = card.querySelector(".patient-name").textContent.toLowerCase();
+            const history = card.querySelector(".patient-history").textContent.toLowerCase();
+            const isVisible = name.includes(searchValue) || history.includes(searchValue);
+
+            card.style.display = isVisible ? "block" : "none";
+        });
+    }, 300);
+
+    document.getElementById("searchInput").addEventListener("input", handleSearch);
+</script>
