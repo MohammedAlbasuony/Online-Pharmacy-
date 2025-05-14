@@ -6,64 +6,64 @@
 
 <style>
     .fade-transition {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
-        .fade-transition.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .fade-transition.show {
+    opacity: 1;
+    transform: translateY(0);
+    }
 
     .form-icon {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
-        pointer-events: none;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
     }
 
     .input-with-icon {
-        position: relative;
+    position: relative;
     }
 
-        .input-with-icon input,
-        .input-with-icon select {
-            padding-left: 2.5rem;
-        }
+    .input-with-icon input,
+    .input-with-icon select {
+    padding-left: 2.5rem;
+    }
 
     .form-control:focus + .form-icon,
     .form-select:focus + .form-icon {
-        color: #0d6efd;
+    color: #0d6efd;
     }
 
     .form-control:focus,
     .form-select:focus {
-        box-shadow: 0 0 0 3px rgba(13, 118, 255, 0.25);
-        border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 118, 255, 0.25);
+    border-color: #0d6efd;
     }
 
     .btn-lg {
-        min-width: 120px;
+    min-width: 120px;
     }
 </style>
 
 @section Scripts {
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            const animatedCard = document.querySelector('.fade-transition');
-            if (animatedCard) {
-                setTimeout(() => {
-                    animatedCard.classList.add('show');
-                }, 100);
-            }
+        const animatedCard = document.querySelector('.fade-transition');
+        if (animatedCard) {
+        setTimeout(() => {
+        animatedCard.classList.add('show');
+        }, 100);
+        }
         });
         document.getElementById("patientName").addEventListener("change", function() {
-            // Update the hidden PatientId field when a patient is selected
-            var selectedPatientId = this.value;
-            document.getElementById("PatientId").value = selectedPatientId;
+        // Update the hidden PatientId field when a patient is selected
+        var selectedPatientId = this.value;
+        document.getElementById("PatientId").value = selectedPatientId;
         });
     </script>
 }
@@ -87,9 +87,12 @@
                             <i class="bi bi-person form-icon" aria-hidden="true"></i>
                             <select id="patientName" class="form-select rounded-3 shadow-sm">
                                 <option value="">-- Select Patient --</option>
+                                @if (ViewBag.Patients != null)
+                                { 
                                 @foreach (var patient in ViewBag.Patients as SelectList)
                                 {
                                     <option value="@patient.Value">@patient.Text</option>
+                                }
                                 }
                             </select>
                         </div>
