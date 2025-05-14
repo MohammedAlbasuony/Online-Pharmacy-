@@ -57,68 +57,139 @@
 
                 <nav id="navmenu" class="navmenu">
                     <ul>
-                        <li><a href="@Url.Action("Index", "Home")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">Home</a></li>
+                        @{
+                            string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+                            string currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
-                        @if (User.IsInRole("Doctor"))
-                        {
-                            @* <li><a href="@Url.Action("Index", "Doctor")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Doctor" ? "active" : "")">Dashboard</a></li> *@
-                            <li><a href="@Url.Action("GetallPatient", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Patients" ? "active" : "")">Patients</a></li>
-                            <li><a href="@Url.Action("Index", "Consultation")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Consultation" ? "active" : "")">Consultations</a></li>
-                            <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
-                        }
-
-                        @if (User.IsInRole("Patient"))
-                        {
-                            @* <li><a href="@Url.Action("Index", "Patient")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Patient" ? "active" : "")">Dashboard</a></li> *@
-                            @* <li><a href="@Url.Action("Prescriptions", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Prescriptions" ? "active" : "")">My Prescriptions</a></li> *@
-                            @* <li><a href="@Url.Action("Orders", "Patient")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">My Orders</a></li> *@
-                            <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
+                            Func<string, string, string> isActive = (ctrl, act) =>
+                            ctrl.Equals(currentController, StringComparison.OrdinalIgnoreCase) &&
+                            act.Equals(currentAction, StringComparison.OrdinalIgnoreCase) ? "active text-primary fw-bold" : "";
 
                         }
 
-                        @if (User.IsInRole("Pharmacist"))
-                        {
-                            @* <li><a href="@Url.Action("Index", "Pharmacist")" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Pharmacist" ? "active" : "")">Dashboard</a></li> *@
-                            @* <li><a href="@Url.Action("Inventory", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Inventory" ? "active" : "")">Inventory</a></li> *@
-                            @* <li><a href="@Url.Action("Orders", "Pharmacist")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">Orders</a></li> *@
-                            <li><a href="@Url.Action("GetAllMedicine", "Medicine")" class="@(ViewContext.RouteData.Values["action"].ToString() == "Medicines" ? "active" : "")">Medicines</a></li>
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link @isActive("Home", "Index")" href="@Url.Action("Index", "Home")">Home</a>
+                            </li>
 
-                        }
+                            @if (User.IsInRole("Doctor"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @isActive("Patient", "GetallPatient")" href="@Url.Action("GetallPatient", "Patient")">Patients</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @isActive("Consultation", "Index")" href="@Url.Action("Index", "Consultation")">Consultations</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
+                                </li>
+                            }
 
-                        @* <li><a href="#About" class="@(ViewContext.RouteData.Values["action"].ToString() == "About" ? "active" : "")">About</a></li> *@
-                        @* <li><a href="#Contact" class="@(ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")">Contact</a></li> *@
-                        
-                       
-                            <div class="d-flex align-items-center me-3">
-                                <a href="@Url.Action("Index", "Cart")" class="position-relative text-decoration-none">
-                                    <i class="fas fa-shopping-cart fs-5"></i>
+                            @if (User.IsInRole("Patient") || User.IsInRole("Pharmacist"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Cart")" class="nav-link nav-cart-link @(currentController == "Cart" ? "active text-primary fw-bold" : "")">
+                                    <i class="fas fa-shopping-cart cart-icon"></i>
+                                    
                                     @if (ViewBag.CartItemCount > 0)
                                     {
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        <span class="cart-badge">
                                             @ViewBag.CartItemCount
                                             <span class="visually-hidden">items in cart</span>
                                         </span>
                                     }
                                 </a>
-                            </div>
+                            </li>
+
+
+
+
                         
                     </ul>
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
                 </nav>
+                <style>
+                    .cta-btn-container {
+                        display: flex; /* Make buttons appear next to each other */
+                        gap: 0; /* Ensure no gap between the buttons */
+                    }
 
+                    .cta-btn {
+                        padding: 0.75rem 1.5rem;
+                        font-size: 1rem;
+                        border-radius: 30px;
+                        font-weight: bold;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        transition: all 0.3s ease;
+                    }
+
+                    .cta-btn-primary {
+                        background-color: #007bff;
+                        color: white;
+                    }
+
+                        .cta-btn-primary:hover {
+                            background-color: #0056b3;
+                        }
+
+                    .cta-btn-secondary {
+                        background-color: #28a745;
+                        color: white;
+                    }
+
+                        .cta-btn-secondary:hover {
+                            background-color: #218838;
+                        }
+
+                    .dropdown-menu {
+                        border-radius: 0.5rem;
+                        border: 1px solid #ddd;
+                        padding: 0;
+                    }
+
+                    .dropdown-item {
+                        padding: 10px 20px;
+                        transition: background-color 0.3s ease;
+                    }
+
+                        .dropdown-item:hover {
+                            background-color: #f1f1f1;
+                        }
+
+                    .cta-btn-primary.dropdown-toggle {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    }
+
+                        .cta-btn-primary.dropdown-toggle i {
+                            font-size: 1.25rem;
+                        }
+
+
+                </style>
                 @if (!User.Identity.IsAuthenticated)
                 {
-                    <a class="cta-btn" href="@Url.Action("Login", "Account")">Login</a>
-                    <a class="cta-btn" href="@Url.Action("Register", "Account")">Register</a>
+                    <div class="cta-btn-container">
+                        <a class="cta-btn cta-btn-primary" href="@Url.Action("Login", "Account")">Login</a>
+                        <a class="cta-btn cta-btn-secondary" href="@Url.Action("Register", "Account")">Register</a>
+                    </div>
                 }
                 else
                 {
                     <div class="dropdown">
-                        <button class="cta-btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="cta-btn cta-btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-1"></i> @User.Identity.Name
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">My Profile</a></li>
+                            @* <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">My Profile</a></li> *@
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "form-inline", id = "logoutForm" }))
@@ -126,12 +197,12 @@
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="dropdown-item">Logout</button>
                                 }
-
-
                             </li>
                         </ul>
                     </div>
                 }
+
+
             </div>
         </div>
         @RenderSection("Styles", required: false)

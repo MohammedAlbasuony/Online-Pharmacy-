@@ -6,121 +6,146 @@
     ViewData["Title"] = "Medicine List";
 }
 
-<!-- SweetAlert2 CDN -->
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<!-- SweetAlert2 -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Custom Modern Styles -->
+<style>
+    .medicine-card {
+        border: none;
+        border-radius: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+        .medicine-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .medicine-card img {
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+    .card-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .btn-sm {
+        font-size: 0.85rem;
+        border-radius: 10px;
+    }
+
+    .pagination .page-item .page-link {
+        border-radius: 10px;
+    }
+
+    .btn-shadow {
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+
+    .input-group input {
+        border-radius: 12px 0 0 12px;
+    }
+
+    .input-group .btn {
+        border-radius: 0 12px 12px 0;
+    }
+
+    .no-img {
+        height: 200px;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #aaa;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        font-weight: 500;
+    }
+</style>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary">Medicine List</h2>
-        @if (User.IsInRole("Doctor"))
+        <h2 class="text-primary fw-bold">🧪 Medicine List</h2>
+        @if (User.IsInRole("Doctor" )|| User.IsInRole("Pharmacist"))
         {
-            <a asp-action="AddMedicine" class="btn btn-primary shadow">+ Add New Medicine</a>
+            <a asp-action="AddMedicine" class="btn btn-primary btn-shadow">+ Add New Medicine</a>
         }
     </div>
-    <form method="get" asp-action="GetAllMedicine" class="mb-3">
-        <div class="input-group">
+
+    <form method="get" asp-action="GetAllMedicine" class="mb-4">
+        <div class="input-group shadow-sm">
             <input type="text" name="searchQuery" value="@ViewBag.CurrentFilter" class="form-control" placeholder="Search by name, category, manufacturer..." />
             <button type="submit" class="btn btn-outline-primary">Search</button>
         </div>
     </form>
 
-
     @if (Model != null && Model.Any())
     {
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle text-center">
-                <thead class="table-light">
-                    <tr>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Manufacturer</th>
-                        <th>Expiry</th>
-                        <th>Prescription</th>
-                        <th>Uses</th>
-                        <th>Side Effects</th>
-                        <th>Image</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var medicine in Model)
-                    {
-                        <tr>
-                            <td>@medicine.Name</td>
-                            <td>@medicine.Category</td>
-                            <td>@medicine.Price</td>
-                            <td>@medicine.StockQuantity</td>
-                            <td>@medicine.Manufacturer</td>
-                            <td>@medicine.ExpiryDate.ToShortDateString()</td>
-                            <td class="fw-bold text-@(medicine.RequiresPrescription ?  "success":"danger" )">
-                                @(medicine.RequiresPrescription ? "Yes" : "No")
-                            </td>
-                            <td>@medicine.Uses</td>
-                            <td>@medicine.SideEffects</td>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var medicine in Model)
+            {
+                <div class="col">
+                    <div class="card medicine-card h-100">
+                        @if (!string.IsNullOrEmpty(medicine.ImageUrl))
+                        {
+                            <img src="@medicine.ImageUrl" class="card-img-top" alt="@medicine.Name" style="height: 200px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="no-img">No Image</div>
+                        }
 
-                            <td>
-                                @if (!string.IsNullOrEmpty(medicine.ImageUrl))
-                                {
-                                    <a href="@medicine.ImageUrl" target="_blank">
-                                        <img src="@medicine.ImageUrl" alt="Image" class="img-thumbnail" style="max-height: 60px;" />
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">N/A</span>
-                                }
-                            </td>
-                            <td>
-                                @if (User.IsInRole("Doctor"))
-                                {
-                                    <div class="btn-group" role="group">
-                                        <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-warning btn-sm">Edit</a>
-                                        <button onclick="confirmDelete('@Url.Action("DeleteMedicine", new { id = medicine.MedicineID })')" class="btn btn-outline-danger btn-sm">Delete</button>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                        <input type="hidden" name="medicationId" value="@medicine.MedicineID" />
-                                        <input type="hidden" name="name" value="@medicine.Name" />
-                                        <input type="hidden" name="price" value="@medicine.Price" />
-                                        <input type="hidden" name="maxQty" value="@medicine.StockQuantity" />
-                                        <input type="hidden" name="imageUrl" value="@medicine.ImageUrl" />
-                                        <input type="hidden" name="isRx" value="@medicine.RequiresPrescription" />
-                                        <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
-                                    </form>
-                                }
-                            </td>
+                        <div class="card-body">
+                            <h5 class="card-title text-dark">@medicine.Name</h5>
+                            <p class="card-text mb-1"><strong>💰 Price:</strong> @medicine.Price EGP</p>
+                            <p class="card-text"><strong>📅 Expiry:</strong> @medicine.ExpiryDate.ToShortDateString()</p>
+                            <a asp-action="MedicineDetails" asp-route-id="@medicine.MedicineID" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+                        </div>
 
-
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                        <div class="card-footer bg-white border-0">
+                            @if (User.IsInRole("Doctor") || User.IsInRole("Pharmacist"))
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-warning btn-sm">Edit</a>
+                                    <button onclick="confirmDelete('@Url.Action("DeleteMedicine", new { id = medicine.MedicineID })')" class="btn btn-danger btn-sm">Delete</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mt-2">
+                                    <input type="hidden" name="medicationId" value="@medicine.MedicineID" />
+                                    <input type="hidden" name="name" value="@medicine.Name" />
+                                    <input type="hidden" name="price" value="@medicine.Price" />
+                                    <input type="hidden" name="maxQty" value="@medicine.StockQuantity" />
+                                    <input type="hidden" name="imageUrl" value="@medicine.ImageUrl" />
+                                    <input type="hidden" name="isRx" value="@medicine.RequiresPrescription" />
+                                    <button type="submit" class="btn btn-success btn-sm w-100">Add to Cart</button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
 
-        <!-- Modern Pagination with Custom Style -->
-        <div class="d-flex justify-content-center mt-3">
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
             <nav aria-label="Page navigation">
                 <ul class="pagination pagination-lg">
                     @if (Model.HasPreviousPage)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber - 1 })" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
+                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber - 1 })">&laquo;</a>
                         </li>
                     }
                     else
                     {
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
+                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
                     }
 
                     @for (var i = 1; i <= Model.PageCount; i++)
@@ -133,18 +158,12 @@
                     @if (Model.HasNextPage)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber + 1 })" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
+                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber + 1 })">&raquo;</a>
                         </li>
                     }
                     else
                     {
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
+                        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
                     }
                 </ul>
             </nav>
@@ -153,7 +172,7 @@
     else
     {
         <div class="alert alert-info text-center mt-5">
-            No medicines found. Click "Add New Medicine" to get started.
+            No medicines found. Click <strong>"Add New Medicine"</strong> to get started.
         </div>
     }
 </div>

@@ -240,6 +240,42 @@ public class CartController : Controller
         TempData["Success"] = "Payment successful. Your order is now paid!";
         return RedirectToAction("OrderConfirmation", new { orderId = order.OrderID });
     }
+    // Increase the quantity of the item in the cart
+    public IActionResult IncreaseQuantity(int medicationId)
+    {
+        var cart = GetCart();
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        var existing = cart.FirstOrDefault(x => x.MedicationId == medicationId && x.UserId == userId);
+        if (existing != null && existing.Quantity < existing.MaxQuantity)
+        {
+            existing.Quantity++;  // Increase the quantity
+        }
+
+        SaveCart(cart);
+        return RedirectToAction("Index");
+    }
+
+    // Decrease the quantity of the item in the cart
+    public IActionResult DecreaseQuantity(int medicationId)
+    {
+        var cart = GetCart();
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        var existing = cart.FirstOrDefault(x => x.MedicationId == medicationId && x.UserId == userId);
+        if (existing != null && existing.Quantity > 1)
+        {
+            existing.Quantity--;  // Decrease the quantity
+        }
+        else if (existing != null && existing.Quantity == 1)
+        {
+            // If quantity is 1, remove the item from the cart
+            cart.Remove(existing);
+        }
+
+        SaveCart(cart);
+        return RedirectToAction("Index");
+    }
 
 
 

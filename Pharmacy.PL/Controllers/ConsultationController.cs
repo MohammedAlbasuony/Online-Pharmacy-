@@ -20,7 +20,7 @@ namespace Pharmacy.PL.Controllers
         // GET: /consultation
         public async Task<IActionResult> Index(int page = 1)
         {
-            int pageSize = 2;
+            int pageSize = 12;
             var consultations = await _context.Consultations.OrderBy(c => c.Date).ToListAsync();
             var pagedConsultations = consultations.ToPagedList(page, pageSize);
             return View(pagedConsultations);

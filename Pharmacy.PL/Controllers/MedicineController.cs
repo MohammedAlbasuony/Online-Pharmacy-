@@ -20,7 +20,7 @@ namespace Pharmacy.PL.Controllers
         }
         public async Task<IActionResult> GetAllMedicine(string searchQuery, int page = 1)
         {
-            int pageSize = 10;  // Define the page size
+            int pageSize = 12;  // Define the page size
             var medicines = await _medicineService.GetAllAsync();
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
@@ -45,6 +45,15 @@ namespace Pharmacy.PL.Controllers
             var result = await _medicineService.GetByIdAsync(id);
             return View(result);
         }
+        public async Task<IActionResult> MedicineDetails(int id)
+        {
+            var medicine = await _medicineService.GetByIdAsync(id); // Replace with your actual service
+            if (medicine == null)
+                return NotFound();
+
+            return View(medicine);
+        }
+
 
         [HttpGet]
         public IActionResult AddMedicine()
