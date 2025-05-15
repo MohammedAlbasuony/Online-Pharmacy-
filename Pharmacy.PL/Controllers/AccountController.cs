@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using NuGet.Protocol.Plugins;
+using Pharmacy.BLL.ViewModels;
 using Pharmacy.DAL.DB;
 using Pharmacy.DAL.Entity;
 using Pharmacy.PL.ViewModels;
@@ -16,12 +18,15 @@ namespace Pharmacy.PL.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly ApplicationDbContext _db;
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext db)
+        private readonly IEmailSender _emailSender;
+
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext db, IEmailSender emailSender)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
             _db = db;
+            _emailSender = emailSender; 
         }
 
 
@@ -35,16 +40,16 @@ namespace Pharmacy.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVm model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             var userExists = await userManager.FindByEmailAsync(model.Email);
             if (userExists != null)
             {
                 return BadRequest("User already exists");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
 
             int? userTypeId = null;
             string role = model.UserType.ToString();
@@ -147,6 +152,10 @@ namespace Pharmacy.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVm model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             var user = await userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
@@ -165,10 +174,7 @@ namespace Pharmacy.PL.Controllers
                 return View(model);
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            
             await signInManager.SignInAsync(user, isPersistent: false);
             return RedirectToAction("Index", "Home");
 
@@ -256,7 +262,98 @@ namespace Pharmacy.PL.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                //if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+                //{
+                //    // Don't reveal that the user does not exist or is not confirmed
+                //    return RedirectToAction("ForgotPasswordConfirmation");
+                //}
+
+                var code = await userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { userId = user.Id, code = code },
+                    protocol: HttpContext.Request.Scheme);
+
+                // Send email with the reset link
+                await _emailSender.SendEmailAsync(
+                    model.Email,
+                    "Reset Password",
+                    $"Please reset your password by <a href='{callbackUrl}'>clicking here</a>.");
+
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
 
 
+        [HttpGet]
+        public IActionResult ResetPassword(string code = null)
+        {
+            if (code == null)
+            {
+                return BadRequest("A code must be supplied for password reset.");
+            }
+            else
+            {
+                var model = new ResetPasswordViewModel { Code = code };
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return RedirectToAction("ResetPasswordConfirmation", "Account");
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ResetPasswordConfirmation", "Account");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
     }
 }

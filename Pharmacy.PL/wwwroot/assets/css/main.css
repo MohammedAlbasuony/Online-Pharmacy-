@@ -38,6 +38,12 @@
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
+.bg-glass {
+    backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
 
 .light-background {
   --background-color: #f7fcfc;

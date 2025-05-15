@@ -1,58 +1,328 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Pharmacy.PL</title>
-    <script type="importmap"></script>
-    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
-    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
-    @* <link rel="stylesheet" href="~/Pharmacy.PL.styles.css" asp-append-version="true" /> *@
-    @* <link rel="stylesheet" href="~" asp-append-version="true" /> *@
+    <title>@ViewData["Title"] - PharmaCare</title>
+
     <!-- Favicons -->
     <link href="~/assets/img/favicon.png" rel="icon">
     <link href="~/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Vendor CSS Files -->
-    <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="~/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Vendor CSS -->
+    <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/assets/vendor/aos/aos.css" rel="stylesheet">
-    <link href="~/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="~/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
     <link href="~/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-    <!-- Main CSS File -->
+    <!-- Main CSS -->
     <link href="~/assets/css/main.css" rel="stylesheet">
-
-    <!-- Additional CSS -->
     <link href="~/css/site.css" rel="stylesheet">
 
+    <style>
+        :root {
+            --primary-color: #74ebd5;
+            --secondary-color: #9face6;
+            --accent-color: #f6c23e;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fc;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-color);
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .topbar {
+            background: linear-gradient(135deg, var(--primary-color), #9face6);
+            color: white;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .branding {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .logo {
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+
+            .logo img {
+                height: 40px;
+                margin-right: 10px;
+            }
+
+        .navmenu {
+            display: flex;
+            align-items: center;
+        }
+
+            .navmenu ul {
+                display: flex;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .navmenu li {
+                position: relative;
+                margin: 0 0.5rem;
+            }
+
+            .navmenu a {
+                color: var(--text-dark);
+                text-decoration: none;
+                padding: 0.5rem 1rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                border-radius: 0.5rem;
+            }
+
+                .navmenu a:hover,
+                .navmenu a.active {
+                    color: var(--primary-color);
+                    background-color: rgba(78, 115, 223, 0.1);
+                }
+
+        /* User Controls */
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-auth {
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-login {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-register {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* User Dropdown */
+        .user-dropdown .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 0.6rem 1.5rem;
+        }
+
+        .user-dropdown .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .user-dropdown .dropdown-item {
+            padding: 0.5rem 1.5rem;
+            transition: all 0.2s;
+        }
+
+            .user-dropdown .dropdown-item:hover {
+                background-color: rgba(78, 115, 223, 0.1);
+                color: var(--primary-color);
+            }
+
+        /* Cart Icon */
+        .nav-cart-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-icon {
+            font-size: 1.2rem;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+            .footer a {
+                color: rgba(255, 255, 255, 0.7);
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+
+                .footer a:hover {
+                    color: white;
+                }
+
+            .footer h4 {
+                color: white;
+                margin-bottom: 1.5rem;
+                font-weight: 600;
+            }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+            .social-links a:hover {
+                background: var(--primary-color);
+                transform: translateY(-3px);
+            }
+
+        /* Scroll Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+            .scroll-top.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        /* Responsive Adjustments */
+        @@media (max-width: 992px) {
+            .navmenu
+
+        {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .navmenu.active {
+            right: 0;
+        }
+
+        .navmenu ul {
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .navmenu li {
+            margin: 0.5rem 0;
+        }
+
+        .mobile-nav-toggle {
+            display: block !important;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        }
+    </style>
 </head>
 <body class="@ViewData["BodyClass"]">
-    
+    <!-- Header -->
     <header id="header" class="header sticky-top">
-
         <div class="topbar d-flex align-items-center">
-            <div class="container d-flex justify-content-center justify-content-md-between">
-                <div class="d-none d-md-flex align-items-center">
-                    <i class="bi bi-clock me-1"></i> Monday - Saturday, 8AM to 10PM
+            <div class="container d-flex justify-content-between">
+                <div class="contact-info d-flex align-items-center">
+                    <i class="bi bi-clock me-2"></i>
+                    <span>Monday - Saturday, 8AM to 10PM</span>
                 </div>
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-phone me-1"></i> Call us now +20 1222994710
+                <div class="contact-info d-flex align-items-center">
+                    <i class="bi bi-phone me-2"></i>
+                    <span>+20 1222994710</span>
                 </div>
             </div>
-        </div><!-- End Top Bar -->
+        </div>
 
-        <div class="branding d-flex align-items-center">
-            <div class="container position-relative d-flex align-items-center justify-content-end">
-                <a href="@Url.Action("Index", "Home")" class="logo d-flex align-items-center me-auto">
-                    <img src="~/assets/img/logo.png" alt="">
-                    <h1 class="sitename">PharmaCare</h1>
+        <div class="branding">
+            <div class="container d-flex align-items-center justify-content-between">
+                <a href="@Url.Action("Index", "Home")" class="logo d-flex align-items-center">
+                    <img src="~/assets/img/logo.png" alt="PharmaCare Logo">
+                    <span class="ms-2">PharmaCare</span>
                 </a>
 
                 <nav id="navmenu" class="navmenu">
@@ -63,247 +333,186 @@
 
                             Func<string, string, string> isActive = (ctrl, act) =>
                             ctrl.Equals(currentController, StringComparison.OrdinalIgnoreCase) &&
-                            act.Equals(currentAction, StringComparison.OrdinalIgnoreCase) ? "active text-primary fw-bold" : "";
-
+                            act.Equals(currentAction, StringComparison.OrdinalIgnoreCase) ? "active" : "";
                         }
 
-                        <ul class="nav">
-                            <li class="nav-item">
-                                <a class="nav-link @isActive("Home", "Index")" href="@Url.Action("Index", "Home")">Home</a>
-                            </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Home")" class="@isActive("Home", "Index")">Home</a>
+                        </li>
 
-                            @if (User.IsInRole("Doctor"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link @isActive("Patient", "GetallPatient")" href="@Url.Action("GetallPatient", "Patient")">Patients</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link @isActive("Consultation", "Index")" href="@Url.Action("Index", "Consultation")">Consultations</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
-                                </li>
-                            }
-                            @if (User.IsInRole("Patient")){
-                                <li class="nav-item">
-                                <a class="nav-link @isActive("Consultation", "Index")" href="@Url.Action("Index", "Consultation")">Consultations</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
-                                </li>
-                            }
-                            @if (User.IsInRole("Pharmacist"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link @isActive("Medicine", "GetAllMedicine")" href="@Url.Action("GetAllMedicine", "Medicine")">Medicines</a>
-                                </li>
-                            }
-                             @if (User.IsInRole("Patient"))
-                             {
-                            <li class="nav-item">
-                                <a href="@Url.Action("Index", "Cart")" class="nav-link nav-cart-link @(currentController == "Cart" ? "active text-primary fw-bold" : "")">
+                        @if (User.IsInRole("Doctor"))
+                        {
+                            <li>
+                                <a href="@Url.Action("GetallPatient", "Patient")" class="@isActive("Patient", "GetallPatient")">Patients</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Index", "Consultation")" class="@isActive("Consultation", "Index")">Consultations</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("GetAllMedicine", "Medicine")" class="@isActive("Medicine", "GetAllMedicine")">Medicines</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Patient"))
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Consultation")" class="@isActive("Consultation", "Index")">Consultations</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("GetAllMedicine", "Medicine")" class="@isActive("Medicine", "GetAllMedicine")">Medicines</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Index", "Cart")" class="nav-cart-link @(currentController == "Cart" ? "active" : "")">
                                     <i class="fas fa-shopping-cart cart-icon"></i>
-                                    
                                     @if (ViewBag.CartItemCount > 0)
                                     {
-                                        <span class="cart-badge">
-                                            @ViewBag.CartItemCount
-                                            <span class="visually-hidden">items in cart</span>
-                                        </span>
+                                        <span class="cart-badge">@ViewBag.CartItemCount</span>
                                     }
                                 </a>
                             </li>
-                            }
-
-
-
-                        
-                    </ul>
-                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-                </nav>
-                <style>
-                    .cta-btn-container {
-                        display: flex; /* Make buttons appear next to each other */
-                        gap: 0; /* Ensure no gap between the buttons */
-                    }
-
-                    .cta-btn {
-                        padding: 0.75rem 1.5rem;
-                        font-size: 1rem;
-                        border-radius: 30px;
-                        font-weight: bold;
-                        text-align: center;
-                        text-decoration: none;
-                        display: inline-block;
-                        transition: all 0.3s ease;
-                    }
-
-                    .cta-btn-primary {
-                        background-color: #007bff;
-                        color: white;
-                    }
-
-                        .cta-btn-primary:hover {
-                            background-color: #0056b3;
                         }
 
-                    .cta-btn-secondary {
-                        background-color: #28a745;
-                        color: white;
-                    }
-
-                        .cta-btn-secondary:hover {
-                            background-color: #218838;
-                        }
-
-                    .dropdown-menu {
-                        border-radius: 0.5rem;
-                        border: 1px solid #ddd;
-                        padding: 0;
-                    }
-
-                    .dropdown-item {
-                        padding: 10px 20px;
-                        transition: background-color 0.3s ease;
-                    }
-
-                        .dropdown-item:hover {
-                            background-color: #f1f1f1;
-                        }
-
-                    .cta-btn-primary.dropdown-toggle {
-                        display: flex;
-                        align-items: center;
-                        gap: 0.5rem;
-                    }
-
-                        .cta-btn-primary.dropdown-toggle i {
-                            font-size: 1.25rem;
-                        }
-
-
-                </style>
-                @if (!User.Identity.IsAuthenticated)
-                {
-                    <div class="cta-btn-container">
-                        <a class="cta-btn cta-btn-primary" href="@Url.Action("Login", "Account")">Login</a>
-                        <a class="cta-btn cta-btn-secondary" href="@Url.Action("Register", "Account")">Register</a>
-                    </div>
-                }
-                else
-                {
-                    <div class="dropdown">
-                        <button class="cta-btn cta-btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i> @User.Identity.Name
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                            @* <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">My Profile</a></li> *@
-                            <li><hr class="dropdown-divider"></li>
+                        @if (User.IsInRole("Pharmacist"))
+                        {
                             <li>
-                                @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "form-inline", id = "logoutForm" }))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="dropdown-item">Logout</button>
-                                }
+                                <a href="@Url.Action("GetAllMedicine", "Medicine")" class="@isActive("Medicine", "GetAllMedicine")">Medicines</a>
                             </li>
-                        </ul>
-                    </div>
-                }
+                        }
+                    </ul>
+                </nav>
 
+                <div class="user-controls">
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <a href="@Url.Action("Login", "Account")" class="btn-auth btn-login">Login</a>
+                        <a href="@Url.Action("Register", "Account")" class="btn-auth btn-register">Register</a>
+                    }
+                    else
+                    {
+                        <div class="dropdown user-dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>
+                                @User.Identity.Name
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "form-inline", id = "logoutForm" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                        </button>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                    }
 
+                    <i class="mobile-nav-toggle d-xl-none bi bi-list" id="mobileNavToggle"></i>
+                </div>
             </div>
         </div>
-        @RenderSection("Styles", required: false)
-
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer id="footer" class="footer light-background">
-        <div class="container footer-top">
+    <!-- Main Content -->
+    <main id="main">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" class="footer">
+        <div class="container">
             <div class="row gy-4">
-                <div class="col-lg-4 col-md-6 footer-about">
+                <div class="col-lg-4 col-md-6 footer-info">
                     <a href="@Url.Action("Index", "Home")" class="logo d-flex align-items-center">
-                        <span class="sitename">PharmaCare</span>
+                        <span>PharmaCare</span>
                     </a>
-                    <div class="footer-contact pt-3">
-                        <p>20 Gize street</p>
-                        <p>Egypt</p>
-                        <p class="mt-3"><strong>Phone:</strong> <span>+20 1222994710</span></p>
-                        <p><strong>Email:</strong> <span>pharmcarenet@pharmacare.org</span></p>
-                    </div>
-                    <div class="social-links d-flex mt-4">
-                        <a href="#"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#"><i class="bi bi-facebook"></i></a>
-                        <a href="#"><i class="bi bi-instagram"></i></a>
-                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    <p class="mt-3">Your trusted partner in healthcare, providing quality medications and professional consultations.</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
-                    <h4>Useful Links</h4>
+                    <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="@Url.Action("Index", "Home")">Home</a></li>
-                        <li><a href="@Url.Action("About", "Home")">About us</a></li>
-                        <li><a href="@Url.Action("Services", "Home")">Services</a></li>
-                        <li><a href="@Url.Action("Terms", "Home")">Terms of service</a></li>
-                        <li><a href="@Url.Action("Privacy", "Home")">Privacy policy</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="@Url.Action("About", "Home")">About us</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="@Url.Action("Services", "Home")">Services</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="@Url.Action("Privacy", "Home")">Privacy policy</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
                     <h4>Our Services</h4>
                     <ul>
-                        <li><a href="#">Prescription Filling</a></li>
-                        <li><a href="#">Medication Delivery</a></li>
-                        <li><a href="#">Health Consultations</a></li>
-                        <li><a href="#">Refill Reminders</a></li>
-                        <li><a href="#">Health Products</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Prescriptions</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Consultations</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Medication Delivery</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Health Advice</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-4 col-md-6 footer-links">
-                    <h4>Subscribe to Our Newsletter</h4>
-                    <p>Stay updated with our latest health tips and medication information</p>
-                    <form action="#" method="post">
-                        <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="Your Email" aria-label="Your Email" aria-describedby="button-addon2">
-                            <button class="btn btn-outline-primary" type="button" id="button-addon2">Subscribe</button>
-                        </div>
-                    </form>
+                <div class="col-lg-4 col-md-12 footer-contact">
+                    <h4>Contact Us</h4>
+                    <p>
+                        20 Gize Street <br>
+                        Egypt<br><br>
+                        <strong>Phone:</strong> +20 1222994710<br>
+                        <strong>Email:</strong> pharmcarenet@pharmacare.org<br>
+                    </p>
                 </div>
             </div>
         </div>
 
-        <div class="container copyright text-center mt-4">
-            <p>© <span>Copyright</span> <strong class="px-1 sitename">PharmaCare</strong> <span>All Rights Reserved</span></p>
-            <div class="credits">
-                @DateTime.Now.Year - Online Pharmacy System
+        <div class="container mt-4">
+            <div class="copyright">
+                &copy; @DateTime.Now.Year <strong><span>PharmaCare</span></strong>. All Rights Reserved
             </div>
         </div>
     </footer>
-    <!-- Scroll Top -->
-    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-    <!-- Preloader -->
-    <div id="preloader"></div>
+    <!-- Scroll Top Button -->
+    <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
     <!-- Vendor JS Files -->
     <script src="~/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/assets/vendor/php-email-form/validate.js"></script>
     <script src="~/assets/vendor/aos/aos.js"></script>
     <script src="~/assets/vendor/glightbox/js/glightbox.min.js"></script>
-    <script src="~/assets/vendor/purecounter/purecounter_vanilla.js"></script>
     <script src="~/assets/vendor/swiper/swiper-bundle.min.js"></script>
 
     <!-- Main JS File -->
     <script src="~/assets/js/main.js"></script>
 
-    <!-- Additional Scripts -->
-    <script src="~/js/site.js"></script>
+    <!-- Custom Scripts -->
+    <script>
+        // Mobile Navigation Toggle
+        document.getElementById('mobileNavToggle').addEventListener('click', function() {
+            document.getElementById('navmenu').classList.toggle('active');
+        });
+
+        // Scroll Top Button
+        window.addEventListener('scroll', function() {
+            const scrollTop = document.querySelector('.scroll-top');
+            if (window.scrollY > 100) {
+                scrollTop.classList.add('active');
+            } else {
+                scrollTop.classList.remove('active');
+            }
+        });
+
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

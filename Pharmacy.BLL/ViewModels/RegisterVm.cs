@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Pharmacy.DAL.Entity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pharmacy.PL.ViewModels
 {
@@ -8,7 +9,7 @@ namespace Pharmacy.PL.ViewModels
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Enter a valid email address.")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
@@ -21,5 +22,7 @@ namespace Pharmacy.PL.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; }
+        public EnUserType UserType { get; set; }
+
     }
 }

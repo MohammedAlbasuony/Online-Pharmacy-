@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Pharmacy.BLL.Implementation;
 using Pharmacy.BLL.Mapper;
@@ -41,7 +42,7 @@ namespace Pharmacy.PL
             builder.Services.AddScoped<IMedicineService, MedicineService>();
             builder.Services.AddScoped<IPatientService, PatientService>();
             builder.Services.AddScoped<IPatientsRepo, PatientsRepo>();
-
+            builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
             builder.Services.AddAutoMapper(typeof(MyProfile));
 
             builder.Services.AddSession(); // Move this line before builder.Build()  
