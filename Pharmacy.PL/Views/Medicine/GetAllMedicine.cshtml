@@ -1,251 +1,654 @@
-﻿@using X.PagedList
-@using X.PagedList.Mvc.Core
-@model IPagedList<Pharmacy.BLL.ViewModels.MedicineVM.AddMedicineVM>
+﻿@using Pharmacy.BLL.ViewModels.MedicineVM
+@model List<AddMedicineVM>
 
 @{
     ViewData["Title"] = "Medicine List";
 }
 
-<!-- SweetAlert2 -->
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
-
-<!-- Custom Modern Styles -->
-<style>
-    .medicine-card {
-        border: none;
-        border-radius: 20px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    }
-
-        .medicine-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #74ebd5;
+            --secondary-color: #9face6;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --light-bg: #f8f9fc;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --card-shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .medicine-card img {
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            padding-bottom: 2rem;
         }
 
-    .card-title {
-        font-weight: 600;
-        font-size: 1.2rem;
-    }
-
-    .btn-sm {
-        font-size: 0.85rem;
-        border-radius: 10px;
-    }
-
-    
-
-    .btn-shadow {
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-    }
-
-    .no-img {
-        height: 200px;
-        background-color: #f8f9fa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #aaa;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
-        font-weight: 500;
-    }
-
-    .medicine-item {
-        transition: all 0.3s ease;
-    }
-
-    
-
-
-</style>
-
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary fw-bold">🧪 Medicine List</h2>
-        @if (User.IsInRole("Doctor") || User.IsInRole("Pharmacist"))
-        {
-            <a asp-action="AddMedicine" class="btn btn-primary btn-shadow">+ Add New Medicine</a>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
-    </div>
 
-    <!-- Modern Search Bar -->
-    <div class="mb-4 position-relative">
-        <input type="text" id="medicineSearch" class="form-control shadow-sm ps-5 py-3 rounded-pill" placeholder="Search medicines by name, category, or manufacturer..." />
-        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5"></i>
-    </div>
+        .page-title {
+            font-weight: 700;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
 
-    @if (Model != null && Model.Any())
-    {
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            @foreach (var medicine in Model)
+            .page-title i {
+                margin-right: 12px;
+                font-size: 1.5rem;
+                color: var(--primary-color);
+            }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            border-radius: 50px;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+            .search-box:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+                outline: none;
+            }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .medicine-card .card {
+            border-radius: 12px;
+            border: none;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: var(--card-shadow);
+            background: white;
+            position: relative;
+            height: 100%;
+        }
+
+            .medicine-card .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: var(--primary-color);
+                transition: all 0.3s ease;
+            }
+
+            .medicine-card .card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--card-shadow-hover);
+            }
+
+                .medicine-card .card:hover::before {
+                    width: 6px;
+                    background: var(--secondary-color);
+                }
+
+        .medicine-card .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .no-img {
+            height: 200px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            font-weight: 500;
+        }
+
+        .medicine-card .card-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .medicine-card .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .medicine-card .card-footer {
+            background: rgba(248, 249, 252, 0.8);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+        }
+
+        .badge-prescription {
+            background-color: var(--warning-color);
+            color: #212529;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+            .no-results i {
+                font-size: 3rem;
+                color: #adb5bd;
+                margin-bottom: 1rem;
+            }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination {
+            display: flex;
+            padding-left: 0;
+            list-style: none;
+            border-radius: 0.375rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .page-item {
+            margin: 0 3px;
+        }
+
+            .page-item:first-child, .page-item:last-child {
+                margin: 0 8px;
+            }
+
+        .page-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.75rem;
+            margin-left: -1px;
+            line-height: 1.25;
+            color: var(--primary-color);
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            min-width: 40px;
+            height: 40px;
+            border-radius: 8px !important;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+            .page-link:hover {
+                z-index: 2;
+                color: #fff;
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+            }
+
+        .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+        }
+
+        .page-item.disabled .page-link {
+            color: #b7b7b7;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .btn-add {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+        }
+
+            .btn-add:hover {
+                background-color: #17a673;
+                border-color: #17a673;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(28, 200, 138, 0.3);
+            }
+
+        .btn-outline-warning {
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+            transition: all 0.2s;
+        }
+
+            .btn-outline-warning:hover {
+                background-color: var(--warning-color);
+                color: white;
+            }
+
+        .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            transition: all 0.2s;
+        }
+
+            .btn-outline-danger:hover {
+                background-color: var(--danger-color);
+                color: white;
+            }
+
+        .btn-success {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .medicine-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        @@keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .page-item {
+                margin: 2px;
+            }
+
+            .page-link {
+                min-width: 36px;
+                height: 36px;
+                padding: 0.4rem 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .medicine-card .card-body {
+                padding: 1rem;
+            }
+
+            .medicine-card .card-footer {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4 animate__animated animate__fadeIn">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-capsule-pill"></i> Medicine List
+            </h1>
+            @if (User.IsInRole("Doctor") || User.IsInRole("Pharmacist"))
             {
-                <div class="col medicine-item">
-                    <div class="card medicine-card h-100">
-                        @if (!string.IsNullOrEmpty(medicine.ImageUrl))
-                        {
-                            <img src="@medicine.ImageUrl" class="card-img-top" alt="@medicine.Name" style="height: 200px; object-fit: cover;" />
-                        }
-                        else
-                        {
-                            <div class="no-img">No Image</div>
-                        }
+                <a asp-action="AddMedicine" class="btn btn-add shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Add Medicine
+                </a>
+            }
+        </div>
 
-                        <div class="card-body">
-                            <h5 class="card-title text-dark">@medicine.Name</h5>
-                            <p class="card-text mb-1"><strong>💰 Price:</strong> @medicine.Price EGP</p>
-                            <p class="card-text"><strong>📅 Expiry:</strong> @medicine.ExpiryDate.ToShortDateString()</p>
-                            <a asp-action="MedicineDetails" asp-route-id="@medicine.MedicineID" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                        </div>
+        <div class="search-container animate__animated animate__fadeIn animate__delay-1s">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="searchInput" class="form-control search-box" placeholder="Search medicines by name, category, or manufacturer..." />
+        </div>
 
-                        <div class="card-footer bg-white border-0">
-                            @if (User.IsInRole("Doctor") || User.IsInRole("Pharmacist"))
+        @if (Model != null && Model.Any())
+        {
+            <div id="medicineCards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @{
+                    int delay = 0;
+                }
+                @foreach (var medicine in Model)
+                {
+                    <div class="col medicine-card" style="animation-delay: @(delay * 0.1)s"
+                         data-name="@medicine.Name"
+                         data-category="@medicine.Category"
+                         data-manufacturer="@medicine.Manufacturer">
+                        <div class="card h-100">
+                            @if (!string.IsNullOrEmpty(medicine.ImageUrl))
                             {
-                                <div class="d-flex justify-content-between">
-                                    <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-warning btn-sm">Edit</a>
-                                    <button onclick="confirmDelete('@Url.Action("DeleteMedicine", new { id = medicine.MedicineID })')" class="btn btn-danger btn-sm">Delete</button>
-                                </div>
+                                <img src="@medicine.ImageUrl" class="card-img-top" alt="@medicine.Name" />
                             }
                             else
                             {
-                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mt-2">
-                                    <input type="hidden" name="medicationId" value="@medicine.MedicineID" />
-                                    <input type="hidden" name="name" value="@medicine.Name" />
-                                    <input type="hidden" name="price" value="@medicine.Price" />
-                                    <input type="hidden" name="maxQty" value="@medicine.StockQuantity" />
-                                    <input type="hidden" name="imageUrl" value="@medicine.ImageUrl" />
-                                    <input type="hidden" name="isRx" value="@medicine.RequiresPrescription" />
-                                    <button type="submit" class="btn btn-success btn-sm w-100">Add to Cart</button>
-                                </form>
+                                <div class="no-img">No Image</div>
                             }
+
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
+                                        <i class="bi bi-capsule text-primary"></i>
+                                    </div>
+                                    <h5 class="card-title mb-0">@medicine.Name</h5>
+                                </div>
+                                <div class="card-text">
+                                    <p class="text-muted mb-1"><i class="bi bi-tag me-2"></i>@medicine.Category</p>
+                                    <p class="text-muted mb-1"><i class="bi bi-cash-coin me-2"></i>@medicine.Price EGP</p>
+                                    <p class="text-muted mb-2"><i class="bi bi-box-seam me-2"></i>@medicine.StockQuantity in stock</p>
+                                    <div class="d-flex align-items-center">
+                                        @if (medicine.RequiresPrescription)
+                                        {
+                                            <span class="badge badge-prescription rounded-pill">
+                                                <i class="bi bi-file-earmark-medical me-1"></i> Prescription
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="MedicineDetails" asp-route-id="@medicine.MedicineID" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye me-1"></i> Details
+                                    </a>
+                                    @if (User.IsInRole("Doctor") || User.IsInRole("Pharmacist"))
+                                    {
+                                        <a asp-action="UpdateMedicine" asp-route-id="@medicine.MedicineID" class="btn btn-outline-warning btn-sm">
+                                            <i class="bi bi-pencil me-1"></i> Edit
+                                        </a>
+                                        <button onclick="confirmDelete('@Url.Action("DeleteMedicine", new { id = medicine.MedicineID })')" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-trash me-1"></i> Delete
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <form asp-controller="Cart" asp-action="AddToCart" method="post" class="w-100">
+                                            <input type="hidden" name="medicationId" value="@medicine.MedicineID" />
+                                            <input type="hidden" name="name" value="@medicine.Name" />
+                                            <input type="hidden" name="price" value="@medicine.Price" />
+                                            <input type="hidden" name="maxQty" value="@medicine.StockQuantity" />
+                                            <input type="hidden" name="imageUrl" value="@medicine.ImageUrl" />
+                                            <input type="hidden" name="isRx" value="@medicine.RequiresPrescription" />
+                                            <button type="submit" class="btn btn-success btn-sm w-100">
+                                                <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-
-        <!-- Pagination -->
-        <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
-            <ul class="pagination pagination-lg rounded-pill">
-                <!-- Previous Button -->
-                @if (Model.HasPreviousPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber - 1 })" aria-label="Previous">
-                            <i class="bi bi-chevron-left"></i>
-                        </a>
-                    </li>
+                    delay++;
                 }
-                else
-                {
-                    <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
-                }
+            </div>
 
-                <!-- Page Numbers -->
-                <div class="d-flex justify-content-center">
-                    @{
-                        int pageRange = 2; // Number of pages to show around the current page
-                        int startPage = Math.Max(1, Model.PageNumber - pageRange);
-                        int endPage = Math.Min(Model.PageCount, Model.PageNumber + pageRange);
-
-                        // Ensure we always show at least 1 page before and after the current page (if possible)
-                        for (var i = startPage; i <= endPage; i++)
-                        {
-                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = i })">@i</a>
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <nav aria-label="Medicine pagination">
+                    <ul class="pagination" id="pagination">
+                        <li class="page-item disabled" id="prevPage">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
                         </li>
-                        }
+                        <!-- JS will insert page numbers here -->
+                        <li class="page-item disabled" id="nextPage">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+        else
+        {
+            <div class="no-results animate__animated animate__fadeIn">
+                <i class="bi bi-emoji-frown"></i>
+                <h4 class="text-muted">No medicines found</h4>
+                <p class="text-muted">
+                    @if (User.IsInRole("Doctor") || User.IsInRole("Pharmacist"))
+                    {
+                        @:Try adding a new medicine or adjusting your search
                     }
+                    else
+                    {
+                        @:Try adjusting your search
+                    }
+                </p>
+            </div>
+        }
     </div>
 
-    <!-- Next Button -->
-                @if (Model.HasNextPage)
-                {
-        <li class="page-item">
-            <a class="page-link" href="@Url.Action("GetAllMedicine", new { page = Model.PageNumber + 1 })" aria-label="Next">
-                <i class="bi bi-chevron-right"></i>
-            </a>
-        </li>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+                document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.medicine-card');
+            const searchInput = document.getElementById('searchInput');
+            const paginationContainer = document.querySelector('.pagination-container');
+            const pagination = document.getElementById('pagination');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+
+            const itemsPerPage = 12;
+            const totalItems = cards.length;
+            const maxVisiblePages = 5;
+            let currentPage = 1;
+
+            const showPage = (page) => {
+                const start = (page - 1) * itemsPerPage;
+                const end = page * itemsPerPage;
+
+                cards.forEach((card, index) => {
+                    if (index >= start && index < end) {
+                        card.style.display = 'block';
+                        card.style.animationDelay = `${(index % itemsPerPage) * 0.05}s`;
+                        card.classList.add('animate__animated', 'animate__fadeInUp');
+                    } else {
+                        card.style.display = 'none';
+                        card.classList.remove('animate__animated', 'animate__fadeInUp');
+                    }
+                });
+            };
+
+            const buildPagination = () => {
+                pagination.querySelectorAll('.page-number, .ellipsis').forEach(el => el.remove());
+
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
                 }
-                else
-                {
-        <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+
+                if (startPage > 1) {
+                    addPageItem(1);
+                    if (startPage > 2) addEllipsis();
                 }
-        </ul>
-    </nav>
 
+                for (let i = startPage; i <= endPage; i++) {
+                    addPageItem(i);
+                }
 
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) addEllipsis();
+                    addPageItem(totalPages);
+                }
 
+                prevBtn.classList.toggle('disabled', currentPage === 1);
+                nextBtn.classList.toggle('disabled', currentPage === totalPages);
+            };
 
-    }
-    else
-    {
-        <div class="alert alert-info text-center mt-5">
-            No medicines found. Click <strong>"Add New Medicine"</strong> to get started.
-        </div>
-    }
-</div>
-<div id="loading-spinner" style="display:none;">
-    <img src="path_to_your_spinner.gif" alt="Loading..." />
-</div>
+            const addPageItem = (page) => {
+                const li = document.createElement('li');
+                li.className = `page-item page-number ${page === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#">${page}</a>`;
+                li.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = page;
+                    showPage(currentPage);
+                    buildPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                pagination.insertBefore(li, nextBtn);
+            };
 
-<script>
-        document.getElementById("medicineSearch").addEventListener("input", function () {
-        document.getElementById("loading-spinner").style.display = "block"; // Show spinner
-        // Your search and filtering logic
-        document.getElementById("loading-spinner").style.display = "none"; // Hide spinner when done
-    });
+            const addEllipsis = () => {
+                const li = document.createElement('li');
+                li.className = 'page-item ellipsis';
+                li.innerHTML = `<span class="page-link">...</span>`;
+                pagination.insertBefore(li, nextBtn);
+            };
 
-    function confirmDelete(deleteUrl) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This medicine will be permanently deleted!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = deleteUrl;
+            const handleSearch = debounce(function () {
+                const query = this.value.toLowerCase().trim();
+                let matchCount = 0;
+
+                document.querySelector('.no-results')?.remove();
+
+                cards.forEach(card => {
+                    const name = card.dataset.name?.toLowerCase() || '';
+                    const category = card.dataset.category?.toLowerCase() || '';
+                    const manufacturer = card.dataset.manufacturer?.toLowerCase() || '';
+
+                    const match = name.includes(query) || category.includes(query) || manufacturer.includes(query);
+
+                    card.style.display = match ? 'block' : 'none';
+                    card.classList.toggle('animate__fadeIn', match);
+                    if (match) matchCount++;
+                });
+
+                if (query && matchCount === 0) {
+                    const message = document.createElement('div');
+                    message.className = 'no-results animate__animated animate__fadeIn text-center my-4';
+                    message.innerHTML = `
+                        <i class="bi bi-search fs-2 text-muted"></i>
+                        <h5 class="text-muted">No matching medicines found</h5>
+                        <p class="text-muted">Try adjusting your search query</p>
+                    `;
+                    document.getElementById('medicineCards').insertAdjacentElement('afterend', message);
+                }
+
+                paginationContainer.style.display = query ? 'none' : 'flex';
+                currentPage = 1;
+                if (!query) {
+                    showPage(currentPage);
+                    buildPagination();
+                }
+            }, 300);
+
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    showPage(currentPage);
+                    buildPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    showPage(currentPage);
+                    buildPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+
+            searchInput.addEventListener('input', handleSearch);
+
+            // Initial setup
+            showPage(currentPage);
+            buildPagination();
+
+            // Debounce function for performance
+            function debounce(func, wait) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
             }
         });
-    }
 
-    // Real-time filtering
-    document.getElementById("medicineSearch").addEventListener("input", function () {
-        const normalize = str => str?.trim().toLowerCase() || "";
-        const query = normalize(this.value);
-        const items = document.querySelectorAll(".medicine-item");
 
-        items.forEach(item => {
-            const name = normalize(item.querySelector(".card-title")?.textContent);
-            const body = item.querySelector(".card-body")?.textContent || "";
+        // Delete confirmation dialog
+        function confirmDelete(deleteUrl) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This medicine will be permanently deleted!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                background: 'white'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = deleteUrl;
+                }
+            });
+        }
 
-            const match = name.includes(query) || normalize(body).includes(query);
-            item.style.display = match ? "block" : "none";
-        });
-    });
+        // Debounce utility function
+        function debounce(func, delay) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
 
-    @if (TempData["DeleteSuccess"] != null)
-    {
-        <text>
+        @if (TempData["DeleteSuccess"] != null)
+        {
+            <text>
                 Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
                     text: '@TempData["DeleteSuccess"]',
                     timer: 2500,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    background: 'white'
                 });
-        </text>
-    }
-</script>
+            </text>
+        }
+    </script>
+</body>
+</html>

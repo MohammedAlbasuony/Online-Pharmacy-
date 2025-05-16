@@ -29,33 +29,30 @@ namespace Pharmacy.PL.Controllers
         }
 
         // GET: /consultation
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index()
         {
-            int pageSize = 12;
             var user = await _userManager.GetUserAsync(User); // Get the logged-in user
 
-            // If the user is a Doctor, show all consultations
             if (User.IsInRole("Doctor"))
             {
-                var consultations = await _context.Consultations.OrderBy(c => c.Date).ToListAsync();
-                var pagedConsultations = consultations.ToPagedList(page, pageSize);
-                return View(pagedConsultations);
+                var consultations = await _context.Consultations
+                    .OrderBy(c => c.Date)
+                    .ToListAsync();
+                return View(consultations);
             }
 
-            // If the user is a Patient, show only their consultations
             if (User.IsInRole("Patient"))
             {
                 var consultations = await _context.Consultations
-                    .Where(c => c.Patient.ApplicationUserId == user.Id) // Filter by Patient ID
+                    .Where(c => c.Patient.ApplicationUserId == user.Id)
                     .OrderBy(c => c.Date)
                     .ToListAsync();
-
-                var pagedConsultations = consultations.ToPagedList(page, pageSize);
-                return View(pagedConsultations);
+                return View(consultations);
             }
 
-            return View(new List<Consultation>().ToPagedList(page, pageSize)); // Empty list if no role found
+            return View(new List<Consultation>()); // Empty list if no role found
         }
+
 
         // GET: /consultation/details/1
         public async Task<IActionResult> Details(int id)

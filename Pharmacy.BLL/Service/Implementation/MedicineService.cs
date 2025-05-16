@@ -123,9 +123,9 @@ namespace Pharmacy.BLL.Service.Implementation
                     existingMedicine.Manufacturer = medicine.Manufacturer;
                     existingMedicine.ExpiryDate = medicine.ExpiryDate;
                     existingMedicine.RequiresPrescription = medicine.RequiresPrescription;
-                    existingMedicine.ImageUrl = medicine.ImageUrl;
-                    existingMedicine.Uses = medicine.Uses;
-                    existingMedicine.SideEffects = medicine.SideEffects;
+                    //existingMedicine.ImageUrl = medicine.ImageUrl;
+                    //existingMedicine.Uses = medicine.Uses;
+                    //existingMedicine.SideEffects = medicine.SideEffects;
 
 
                     return await _medicineRepo.UpdateAsync(existingMedicine);

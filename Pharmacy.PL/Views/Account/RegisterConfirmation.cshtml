@@ -1,0 +1,218 @@
+﻿@{
+    ViewData["Title"] = "Registration Confirmation";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            --secondary-gradient: linear-gradient(135deg, #74ebd5, #9face6);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-light: rgba(255, 255, 255, 0.9);
+            --text-lighter: rgba(255, 255, 255, 0.7);
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            color: var(--text-light);
+        }
+
+        .confirmation-container {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .card-glass {
+            backdrop-filter: blur(16px);
+            background-color: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+            .card-glass:hover {
+                transform: translateY(-5px) rotateX(2deg);
+                box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+            }
+
+        .btn-light {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-light:hover {
+                background: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .btn-light::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+                transition: 0.5s;
+            }
+
+            .btn-light:hover::after {
+                left: 100%;
+            }
+
+        .success-icon {
+            color: var(--success-color);
+            text-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+        }
+
+        .floating-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @@keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                bottom: -100px;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+                bottom: 100vh;
+            }
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #74ebd5, #9face6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .text-black {
+            color: #000000 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-bubbles"></div>
+
+    <section class="py-5 min-vh-100 d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-6">
+                    <div class="card-glass animate__animated animate__fadeInUp animate__faster">
+                        <div class="card-body p-5 text-center">
+                            <div class="mb-4 animate__animated animate__fadeIn">
+                                <i class="fas fa-envelope-circle-check success-icon" style="font-size: 5rem;"></i>
+                            </div>
+                            <h2 class="mb-4 fw-bold text-gradient animate__animated animate__fadeIn animate__delay-1s">Registration Successful!</h2>
+                            <p class="text-black fw-semibold animate__animated animate__fadeIn animate__delay-2s">
+                                We've sent a confirmation email to <strong>@ViewBag.Email</strong>. Please check your inbox (and spam folder) to confirm your email address.
+                            </p>
+                            <div class="d-grid animate__animated animate__fadeIn animate__delay-3s">
+                                <a href="@Url.Action("Login", "Account")" class="btn btn-light btn-lg rounded-pill py-3">
+                                    Return to Login
+                                </a>
+                            </div>
+                            <div class="mt-4 animate__animated animate__fadeIn animate__delay-3s">
+                                <p class="text-black fw-semibold">
+                                    Didn't receive the email?
+                                    <a href="@Url.Action("ResendConfirmationEmail", "Account", new { email = ViewBag.Email })" class="text-gradient fw-semibold">Resend Confirmation</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Floating bubbles animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const bubblesContainer = document.querySelector('.floating-bubbles');
+            const bubbleCount = 15;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+
+                // Random size between 10px and 50px
+                const size = Math.random() * 40 + 10;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+
+                // Random position
+                bubble.style.left = `${Math.random() * 100}%`;
+
+                // Random animation duration between 10s and 20s
+                const duration = Math.random() * 10 + 10;
+                bubble.style.animationDuration = `${duration}s`;
+
+                // Random delay
+                bubble.style.animationDelay = `${Math.random() * 5}s`;
+
+                bubblesContainer.appendChild(bubble);
+            }
+        });
+    </script>
+</body>
+</html>

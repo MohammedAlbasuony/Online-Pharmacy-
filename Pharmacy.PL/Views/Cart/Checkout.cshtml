@@ -1,189 +1,297 @@
 ﻿@model List<Pharmacy.DAL.Entity.CartItem>
-
 @{
     ViewData["Title"] = "Checkout";
     decimal total = Model.Sum(item => item.UnitPrice * item.Quantity);
 }
 
-<!-- Cool Modern Styling -->
-<style>
-    .checkout-container {
-        background: linear-gradient(135deg, #f0f4f8, #e6eef4);
-        padding: 2rem;
-        border-radius: 20px;
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        max-width: 1200px;
-        margin: 4rem auto;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #74ebd5;
+            --secondary-color: #9face6;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --light-bg: #f8f9fc;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
 
-    .checkout-title {
-        font-size: 2.8rem;
-        font-weight: 800;
-        color: #1e3d58;
-        margin-bottom: 2rem;
-        text-align: center;
-        text-transform: uppercase;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-    .table thead {
-        background-color: #1e3d58;
-        color: #fff;
-        font-weight: 700;
-    }
+        .checkout-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-    .table th, .table td {
-        padding: 1.5rem;
-        text-align: center;
-        vertical-align: middle;
-        font-size: 1.1rem;
-    }
+        .form-card {
+            border-radius: 16px;
+            border: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            box-shadow: var(--card-shadow);
+            background: white;
+            position: relative;
+        }
 
-    .table td {
-        background-color: #fff;
-        color: #333;
-        border-top: 1px solid #e6e6e6;
-    }
+            .form-card:hover {
+                transform: translateY(-8px);
+                box-shadow: var(--card-shadow-hover);
+            }
 
-    .table img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
+            .form-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 6px;
+                height: 100%;
+                background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+                transition: all 0.3s ease;
+            }
 
-    .form-group label {
-        font-size: 1.2rem;
-        color: #333;
-        font-weight: 600;
-    }
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
 
-    .form-control {
-        border-radius: 12px;
-        padding: 1rem;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-        transition: border-color 0.3s ease;
-    }
+            .form-header h2 {
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 0.5rem;
+                position: relative;
+                display: inline-block;
+            }
 
-    .form-control:focus {
-        border-color: #1e3d58;
-        box-shadow: 0 0 8px rgba(30, 61, 88, 0.2);
-    }
-
-    .btn {
-        padding: 0.75rem 2rem;
-        border-radius: 10px;
-        font-weight: 700;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .btn-primary {
-        background-color: #1e3d58;
-        color: white;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        background-color: #1b3446;
-        transform: translateY(-3px);
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-        transform: translateY(-3px);
-    }
-
-    .total-section {
-        margin-top: 3rem;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e3d58;
-        text-align: center;
-    }
-
-    .total-section h4 {
-        color: #333;
-    }
-
-    .btn-group {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-    }
-
-    .empty-cart {
-        padding: 2rem;
-        text-align: center;
-        font-size: 1.2rem;
-        background-color: #fff3cd;
-        border-radius: 10px;
-        color: #856404;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-top: 2rem;
-    }
-</style>
-
-<div class="container checkout-container">
-    <h2 class="checkout-title">Checkout</h2>
-
-    @if (!Model.Any())
-    {
-        <div class="empty-cart">
-            <p>Your cart is empty. Add some items to your cart!</p>
-        </div>
-    }
-    else
-    {
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Medication</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.MedicationName</td>
-                        <td>@item.Quantity</td>
-                        <td>@item.UnitPrice.ToString("C")</td>
-                        <td>@(item.UnitPrice * item.Quantity)</td>
-                    </tr>
+                .form-header h2::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 80px;
+                    height: 4px;
+                    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+                    border-radius: 2px;
                 }
-            </tbody>
-        </table>
 
-        <div class="total-section">
-            <h4>Total Amount: @total.ToString("C")</h4>
+        .order-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 2rem;
+        }
+
+            .order-table th {
+                background-color: var(--primary-color);
+                color: white;
+                font-weight: 600;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .order-table td {
+                padding: 1rem;
+                background-color: white;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                text-align: center;
+            }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            font-size: 1rem;
+            font-weight: 400;
+            height: auto;
+            transition: all 0.3s;
+            box-shadow: none;
+            background-color: #f8f9fa;
+        }
+
+            .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.25);
+                background-color: white;
+            }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #6c757d;
+            color: #6c757d;
+            background-color: transparent;
+        }
+
+            .btn-outline-secondary:hover {
+                background-color: #6c757d;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
+            }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #17a673;
+                border-color: #17a673;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(28, 200, 138, 0.3);
+            }
+
+        .total-section {
+            text-align: right;
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+            .empty-cart i {
+                font-size: 3rem;
+                color: #adb5bd;
+                margin-bottom: 1rem;
+            }
+
+        @@media (max-width: 768px) {
+            .checkout-container {
+                padding: 0 15px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="checkout-container animate__animated animate__fadeIn">
+            <div class="form-header animate__animated animate__fadeInDown">
+                <h2><i class="bi bi-credit-card me-2"></i>Checkout</h2>
+                <p class="text-muted">Complete your purchase</p>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="empty-cart animate__animated animate__fadeIn">
+                    <i class="bi bi-cart-x"></i>
+                    <h4 class="text-muted">Your cart is empty</h4>
+                    <p class="text-muted">Add some items to your cart to get started</p>
+                    <a asp-controller="Medicine" asp-action="GetAllMedicine" class="btn btn-outline-secondary mt-3">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Medicines
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="form-card p-4 p-md-5 animate__animated animate__fadeIn animate__delay-1s">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Medication</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="animate__animated animate__fadeIn">
+                                    <td>@item.MedicationName</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.UnitPrice.ToString("C")</td>
+                                    <td>@((item.UnitPrice * item.Quantity).ToString("C"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="total-section">
+                        <h4>Total: @total.ToString("C")</h4>
+                    </div>
+
+                    <form asp-action="ProcessCheckout" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-4">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-control" name="PaymentMethod" id="PaymentMethod">
+                                <option value="Cash">Cash</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="PayPal">PayPal</option>
+                            </select>
+                        </div>
+
+                        <div class="btn-group">
+                            <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left-circle-fill"></i> Back to Cart
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle-fill"></i> Confirm and Pay
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            }
         </div>
+    </div>
 
-        <form asp-action="ProcessCheckout" method="post">
-            @Html.AntiForgeryToken()
-
-            <div class="form-group">
-                <label for="PaymentMethod">Select Payment Method:</label>
-                <select class="form-control" name="PaymentMethod" id="PaymentMethod">
-                    <option value="Cash">Cash</option>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="PayPal">PayPal</option>
-                </select>
-            </div>
-
-            <div class="btn-group mt-4">
-                <button type="submit" class="btn btn-primary">Confirm and Pay</button>
-                <a href="@Url.Action("Index", "Cart")" class="btn btn-secondary">Back to Cart</a>
-            </div>
-        </form>
-    }
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

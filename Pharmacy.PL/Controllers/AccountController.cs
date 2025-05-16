@@ -44,27 +44,27 @@ namespace Pharmacy.PL.Controllers
             {
                 return View(model);
             }
+
             var userExists = await userManager.FindByEmailAsync(model.Email);
             if (userExists != null)
             {
-                return BadRequest("User already exists");
+                ModelState.AddModelError(string.Empty, "User with this email already exists");
+                return View(model);
             }
-
 
             int? userTypeId = null;
             string role = model.UserType.ToString();
 
-            // Start transaction if needed
             using var transaction = await _db.Database.BeginTransactionAsync();
             try
             {
-                // Create ApplicationUser instance first
                 ApplicationUser user = new ApplicationUser
                 {
-                    UserName = model.Email,
+                    UserName = model.Name,
                     Email = model.Email,
                     FullName = model.Name,
-                    UserType = model.UserType
+                    UserType = model.UserType,
+                    EmailConfirmed = false // Initially false until confirmed
                 };
 
                 IdentityResult userCreateResult = await userManager.CreateAsync(user, model.Password);
@@ -85,7 +85,7 @@ namespace Pharmacy.PL.Controllers
                         {
                             Name = model.Name,
                             MedicalHistory = "No medical history",
-                            ApplicationUserId = user.Id // Assign the UserId
+                            ApplicationUserId = user.Id
                         };
                         _db.Patients.Add(patient);
                         await _db.SaveChangesAsync();
@@ -117,7 +117,6 @@ namespace Pharmacy.PL.Controllers
                         return View(model);
                 }
 
-                // Now assign the userTypeId to the user
                 user.UserTypeID = userTypeId.Value;
 
                 // Add the user to the appropriate role
@@ -128,19 +127,97 @@ namespace Pharmacy.PL.Controllers
 
                 await userManager.AddToRoleAsync(user, role);
 
-                // Commit the transaction
+                // Generate email confirmation token
+                var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                var callbackUrl = Url.Action(
+                    "ConfirmEmail",
+                    "Account",
+                    new { userId = user.Id, code = code },
+                    protocol: HttpContext.Request.Scheme);
+
+                // Send confirmation email
+                await _emailSender.SendEmailAsync(
+                    model.Email,
+                    "Confirm your email",
+                    $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
+
                 await transaction.CommitAsync();
-                return RedirectToAction("Login", "Account");
+
+                // Redirect to a page that tells the user to check their email
+                return RedirectToAction("RegisterConfirmation", new { email = model.Email });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
                 ModelState.AddModelError("", "An error occurred while creating your account.");
+                // Log the exception (ex) here
                 return View(model);
             }
         }
+        [HttpGet]
+        public IActionResult ResendConfirmationEmail()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendConfirmationEmail(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return RedirectToAction("RegisterConfirmation", new { email = email });
+            }
 
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            var callbackUrl = Url.Action(
+                "ConfirmEmail",
+                "Account",
+                new { userId = user.Id, code = code },
+                protocol: HttpContext.Request.Scheme);
+
+            await _emailSender.SendEmailAsync(
+                email,
+                "Confirm your email",
+                $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
+
+            return RedirectToAction("RegisterConfirmation", new { email = email });
+        }
+        [HttpGet]
+        public IActionResult RegisterConfirmation(string email)
+        {
+            ViewBag.Email = email;
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{userId}'.");
+            }
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var result = await userManager.ConfirmEmailAsync(user, code);
+
+            ViewBag.StatusMessage = result.Succeeded
+                ? "Thank you for confirming your email. You can now login."
+                : "Error confirming your email.";
+
+            return View();
+        }
 
         [HttpGet]
         public IActionResult Login()
@@ -156,6 +233,7 @@ namespace Pharmacy.PL.Controllers
             {
                 return View(model);
             }
+
             var user = await userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
@@ -164,21 +242,33 @@ namespace Pharmacy.PL.Controllers
                 return View(model);
             }
 
-
-            var isPasswordValid = await userManager.CheckPasswordAsync(user, model.Password);
-
-            if (!isPasswordValid)
+            // Check if email is confirmed  
+            if (!user.EmailConfirmed)
             {
-
-                ModelState.AddModelError(string.Empty, "Invalid credentials.");
+                ModelState.AddModelError(string.Empty, "Please confirm your email before logging in.");
                 return View(model);
             }
 
-            
-            await signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Index", "Home");
+            // Ensure user.UserName is not null before calling PasswordSignInAsync  
+            if (string.IsNullOrEmpty(user.UserName))
+            {
+                ModelState.AddModelError(string.Empty, "User name is not set for this account.");
+                return View(model);
+            }
 
-              
+            var result = await signInManager.PasswordSignInAsync(
+                user.UserName,
+                model.Password,
+                model.RememberMe,
+                lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return View(model);
         }
         [HttpGet]
         public IActionResult VerifyEmail()

@@ -4,59 +4,326 @@
     ViewData["Title"] = "Update Patient";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4 text-dark">Update Patient</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #74ebd5;
+            --secondary-color: #9face6;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --light-bg: #f8f9fc;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.12);
+            --input-focus: 0 0 0 3px rgba(78, 115, 223, 0.25);
+        }
 
-    <!-- Card Container with Modern Shadow and Hover Effect -->
-    <div class="card shadow-3d rounded-5 p-5 hover-card">
-        <form asp-action="UpdatePatient" method="post" class="needs-validation" novalidate>
-            <input type="hidden" asp-for="PatientID" />
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-            <!-- Patient Name Input -->
-            <div class="mb-4">
-                <label asp-for="Name" class="form-label text-dark">Patient Name</label>
-                <input asp-for="Name" class="form-control form-control-lg p-4 rounded-3 border-0 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300" placeholder="Enter patient's name" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Card Styles */
+        .form-card {
+            border-radius: 16px;
+            border: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            box-shadow: var(--card-shadow);
+            background: white;
+            position: relative;
+        }
+
+            .form-card:hover {
+                transform: translateY(-8px);
+                box-shadow: var(--card-shadow-hover);
+            }
+
+            .form-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 6px;
+                height: 100%;
+                background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+                transition: all 0.3s ease;
+            }
+
+        /* Header Styles */
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+            .form-header h2 {
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 0.5rem;
+                position: relative;
+                display: inline-block;
+            }
+
+                .form-header h2::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 80px;
+                    height: 4px;
+                    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+                    border-radius: 2px;
+                }
+
+        /* Form Elements */
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-icon {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            z-index: 4;
+        }
+
+        .form-control {
+            padding: 20px 300px 20px 120px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            font-size: 1rem;
+            font-weight: 400;
+            height: auto;
+            transition: all 0.3s;
+            box-shadow: none;
+            background-color: #f8f9fa;
+        }
+
+            .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: var(--input-focus);
+                background-color: white;
+            }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Button Styles */
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #6c757d;
+            color: #6c757d;
+            background-color: transparent;
+        }
+
+            .btn-outline-secondary:hover {
+                background-color: #6c757d;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
+            }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #17a673;
+                border-color: #17a673;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(28, 200, 138, 0.3);
+            }
+
+        .btn i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Validation Styles */
+        .field-validation-error {
+            color: var(--danger-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .input-validation-error {
+            border-color: var(--danger-color) !important;
+        }
+
+            .input-validation-error:focus {
+                box-shadow: 0 0 0 3px rgba(231, 74, 59, 0.25);
+            }
+
+        /* Responsive Adjustments */
+        @@media (max-width: 768px) {
+            .form-container {
+                padding: 0 15px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        .animate-form {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="form-container animate__animated animate__fadeIn">
+            <div class="form-header animate__animated animate__fadeInDown">
+                <h2><i class="bi bi-person-check-fill me-2"></i>Update Patient</h2>
+                <p class="text-muted">Please update the patient details below</p>
             </div>
 
-            <!-- Medical History Input -->
-            <div class="mb-4">
-                <label asp-for="MedicalHistory" class="form-label text-dark">Medical History</label>
-                <textarea asp-for="MedicalHistory" class="form-control form-control-lg p-4 rounded-3 border-0 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300" rows="5" placeholder="Enter patient's medical history"></textarea>
-                <span asp-validation-for="MedicalHistory" class="text-danger"></span>
-            </div>
+            <div class="form-card p-4 p-md-5 animate__animated animate__fadeIn animate__delay-1s">
+                <form asp-action="UpdatePatient" method="post" class="needs-validation" novalidate>
+                    <input type="hidden" asp-for="PatientID" />
 
-            <!-- Buttons Container -->
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-4 shadow-lg hover-button transition-all duration-300">
-                    <i class="bi bi-save"></i> Update
-                </button>
-                <a asp-action="GetAllPatient" class="btn btn-outline-dark btn-lg px-5 py-3 rounded-4 shadow-lg hover-button transition-all duration-300 ms-3">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
+                    <!-- Patient Name -->
+                    <div class="input-group">
+                        <label asp-for="Name" class="form-label">Patient Full Name</label>
+                        <div class="position-relative">
+                            <i class="bi bi-person-fill form-icon"></i>
+                            <input asp-for="Name" class="form-control" placeholder="Enter patient's full name" />
+                        </div>
+                        <span asp-validation-for="Name" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Medical History -->
+                    <div class="input-group">
+                        <label asp-for="MedicalHistory" class="form-label">Medical History</label>
+                        <div class="position-relative">
+                            <i class="bi bi-clipboard2-pulse-fill form-icon"></i>
+                            <textarea asp-for="MedicalHistory" class="form-control" rows="5" placeholder="Describe the patient's medical history..."></textarea>
+                        </div>
+                        <span asp-validation-for="MedicalHistory" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Form Buttons -->
+                    <div class="btn-group">
+                        <a asp-action="GetAllPatient" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left-circle-fill"></i> Back to List
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle-fill"></i> Update Patient
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<style>
-    /* Hover effect for the card */
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease-in-out;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
 
-    /* Button hover effect */
-    .hover-button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s ease-in-out;
-    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation classes to form elements
+            const formGroups = document.querySelectorAll('.input-group');
+            formGroups.forEach((group, index) => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+                group.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1 + 0.5}s forwards`;
+            });
 
-    /* 3D shadow for the card */
-    .shadow-3d {
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 10px rgba(0, 0, 0, 0.05);
-    }
+            // Form validation styling
+            const forms = document.querySelectorAll('.needs-validation');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
 
-</style>
+            // Add focus effects
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.querySelector('.form-icon').style.color = 'var(--primary-color)';
+                    this.parentElement.parentElement.querySelector('.form-label').style.color = 'var(--primary-color)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.querySelector('.form-icon').style.color = '#6c757d';
+                    this.parentElement.parentElement.querySelector('.form-label').style.color = '#495057';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

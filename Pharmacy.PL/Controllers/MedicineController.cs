@@ -18,27 +18,12 @@ namespace Pharmacy.PL.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> GetAllMedicine(string searchQuery, int page = 1)
+        public async Task<IActionResult> GetAllMedicine()
         {
-            int pageSize = 12;  // Define the page size
             var medicines = await _medicineService.GetAllAsync();
-            if (!string.IsNullOrWhiteSpace(searchQuery))
-            {
-                searchQuery = searchQuery.ToLower();
-
-                medicines = medicines.Where(m =>
-                    m.Name.ToLower().Contains(searchQuery) ||
-                    m.Category.ToLower().Contains(searchQuery) ||
-                    m.Manufacturer.ToLower().Contains(searchQuery) ||
-                    m.Uses.ToLower().Contains(searchQuery) ||
-                    m.SideEffects.ToLower().Contains(searchQuery)).ToList();
-            }
-
-            ViewBag.CurrentFilter = searchQuery;
-            var pagedMedicines = medicines.ToPagedList(page, pageSize); // Paginate the list
-
-            return View(pagedMedicines); // Pass the paginated result to the view
+            return View(medicines); // Pass the full list to the view
         }
+
 
         public async Task<IActionResult> GetMedicineById(int id)
         {

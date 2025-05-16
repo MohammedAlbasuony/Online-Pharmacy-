@@ -4,116 +4,645 @@
     ViewData["Title"] = "All Patients";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">🩺 All Patients</h2>
-        <a href="@Url.Action("AddPatient", "Patient")" class="btn btn-success shadow-sm">
-            <i class="bi bi-plus-circle me-1"></i> Add Patient
-        </a>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #74ebd5;
+            --secondary-color: #9face6;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --light-bg: #f8f9fc;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --card-shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
 
-    <div class="mb-4">
-        <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm" placeholder="🔍 Search patients by name or history..." />
-    </div>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            padding-bottom: 2rem;
+        }
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info text-center">
-            <i class="bi bi-info-circle-fill"></i> No patients found.
+        /* Header Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .page-title {
+            font-weight: 700;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+
+            .page-title i {
+                margin-right: 12px;
+                font-size: 1.5rem;
+                color: var(--primary-color);
+            }
+
+        /* Search Box */
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            border-radius: 50px;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+            .search-box:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+                outline: none;
+            }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        /* Enhanced Card Styles */
+        .patient-card .card {
+            border-radius: 12px;
+            border: none;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: var(--card-shadow);
+            background: white;
+            position: relative;
+            height: 100%;
+        }
+
+            .patient-card .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: var(--primary-color);
+                transition: all 0.3s ease;
+            }
+
+            .patient-card .card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--card-shadow-hover);
+            }
+
+                .patient-card .card:hover::before {
+                    width: 6px;
+                    background: var(--secondary-color);
+                }
+
+        .patient-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .patient-card .card-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .patient-card .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .patient-card .card-footer {
+            background: rgba(248, 249, 252, 0.8);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+        }
+
+        /* No Results Styling */
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+            .no-results i {
+                font-size: 3rem;
+                color: #adb5bd;
+                margin-bottom: 1rem;
+            }
+
+        /* Enhanced Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination {
+            display: flex;
+            padding-left: 0;
+            list-style: none;
+            border-radius: 0.375rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .page-item {
+            margin: 0 3px;
+        }
+
+            .page-item:first-child, .page-item:last-child {
+                margin: 0 8px;
+            }
+
+        .page-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.75rem;
+            margin-left: -1px;
+            line-height: 1.25;
+            color: var(--primary-color);
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            min-width: 40px;
+            height: 40px;
+            border-radius: 8px !important;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+            .page-link:hover {
+                z-index: 2;
+                color: #fff;
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+            }
+
+        .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+        }
+
+        .page-item.disabled .page-link {
+            color: #b7b7b7;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .page-item.ellipsis .page-link {
+            pointer-events: none;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .page-item
+
+        {
+            margin: 2px;
+        }
+
+        .page-link {
+            min-width: 36px;
+            height: 36px;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .patient-card .card-body {
+            padding: 1rem;
+        }
+
+        .patient-card .card-footer {
+            padding: 0.75rem;
+        }
+
+        }
+
+        /* Animation for cards */
+        .patient-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        @@keyframes fadeInUp {
+            to
+
+        {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* Button Styles */
+        .btn-add {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+        }
+
+            .btn-add:hover {
+                background-color: #17a673;
+                border-color: #17a673;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(28, 200, 138, 0.3);
+            }
+
+        .btn-outline-warning {
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+            transition: all 0.2s;
+        }
+
+            .btn-outline-warning:hover {
+                background-color: var(--warning-color);
+                color: white;
+            }
+
+        .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            transition: all 0.2s;
+        }
+
+            .btn-outline-danger:hover {
+                background-color: var(--danger-color);
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="container mt-4 animate__animated animate__fadeIn">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-people-fill"></i> All Patients
+            </h1>
+            <a href="@Url.Action("AddPatient", "Patient")" class="btn btn-add shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Add Patient
+            </a>
         </div>
-    }
-    else
-    {
-        <div id="patientCards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @foreach (var patient in Model)
-            {
-                <div class="col patient-card">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary patient-name">@patient.Name</h5>
-                            <p class="card-text text-muted patient-history">
-                                <strong>Medical History:</strong> <br />
-                                @patient.MedicalHistory
-                            </p>
-                        </div>
-                        <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
-                            <a href="@Url.Action("UpdatePatient", "Patient", new { id = patient.PatientID })" class="btn btn-outline-warning btn-sm">
-                                <i class="bi bi-pencil"></i> Edit
-                            </a>
-                            <a href="#" class="btn btn-outline-danger btn-sm" onclick="confirmDelete('@patient.PatientID')">
-                                <i class="bi bi-trash"></i> Delete
-                            </a>
+
+        <!-- Search Box -->
+        <div class="search-container animate__animated animate__fadeIn animate__delay-1s">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="searchInput" class="form-control search-box" placeholder="Search patients by name or history..." />
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="no-results animate__animated animate__fadeIn">
+                <i class="bi bi-emoji-frown"></i>
+                <h4 class="text-muted">No patients found</h4>
+                <p class="text-muted">Try adding a new patient or adjusting your search</p>
+            </div>
+        }
+        else
+        {
+            <div id="patientCards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @{
+                    int delay = 0;
+                }
+                @foreach (var patient in Model)
+                {
+                    <div class="col patient-card" style="animation-delay: @(delay * 0.1 + "s")" data-patient-id="@patient.PatientID">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
+                                        <i class="bi bi-person-fill text-primary"></i>
+                                    </div>
+                                    <h5 class="card-title patient-name mb-0">@patient.Name</h5>
+                                </div>
+                                <div class="card-text patient-history">
+                                    <h6 class="text-muted mb-2"><i class="bi bi-clipboard2-pulse me-2"></i>Medical History</h6>
+                                    <p class="text-muted">@patient.MedicalHistory</p>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex justify-content-between">
+                                    <a href="@Url.Action("UpdatePatient", "Patient", new { id = patient.PatientID })"
+                                       class="btn btn-outline-warning btn-sm">
+                                        <i class="bi bi-pencil me-1"></i> Edit
+                                    </a>
+                                    <a href="#" class="btn btn-outline-danger btn-sm" onclick="confirmDelete('@patient.PatientID')">
+                                        <i class="bi bi-trash me-1"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
-</div>
+                    delay++;
+                }
+            </div>
 
-@section Styles {
-    <style>
-        .card:hover {
-            transform: scale(1.02);
-            transition: transform 0.2s ease-in-out;
+            <!-- Enhanced Pagination -->
+            <div class="pagination-container">
+                <nav aria-label="Patient pagination">
+                    <ul class="pagination" id="pagination">
+                        <li class="page-item disabled" id="prevPage">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        <!-- Pages will be inserted here by JavaScript -->
+                        <li class="page-item disabled" id="nextPage">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         }
-    </style>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            const cards = document.querySelectorAll('.patient-card');
+            const itemsPerPage = 12; // Cards per page
+            const totalItems = cards.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            let currentPage = 1;
+            const maxVisiblePages = 5; // Maximum page numbers to show at once
+            const searchInput = document.getElementById('searchInput');
 
-<script>
-    function confirmDelete(patientId) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This action cannot be undone.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = `/Patient/DeletePatient?id=${patientId}`;
+            // Initialize pagination
+            function initPagination() {
+                const pagination = document.getElementById('pagination');
+                const prevPage = document.getElementById('prevPage');
+                const nextPage = document.getElementById('nextPage');
+
+                // Clear existing page numbers (except prev/next)
+                document.querySelectorAll('.page-number, .ellipsis').forEach(page => page.remove());
+
+                // Calculate page range to display
+                let startPage, endPage;
+                if (totalPages <= maxVisiblePages) {
+                    // Show all pages if total pages is less than max visible
+                    startPage = 1;
+                    endPage = totalPages;
+                } else {
+                    // Calculate start and end pages with current page in the middle
+                    const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+                    const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+
+                    if (currentPage <= maxPagesBeforeCurrent) {
+                        // Near the beginning
+                        startPage = 1;
+                        endPage = maxVisiblePages;
+                    } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+                        // Near the end
+                        startPage = totalPages - maxVisiblePages + 1;
+                        endPage = totalPages;
+                    } else {
+                        // Somewhere in the middle
+                        startPage = currentPage - maxPagesBeforeCurrent;
+                        endPage = currentPage + maxPagesAfterCurrent;
+                    }
+                }
+
+                // Add first page and ellipsis if needed
+                if (startPage > 1) {
+                    addPageItem(1);
+                    if (startPage > 2) {
+                        addEllipsis();
+                    }
+                }
+
+                // Add page numbers in range
+                for (let i = startPage; i <= endPage; i++) {
+                    addPageItem(i);
+                }
+
+                // Add last page and ellipsis if needed
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        addEllipsis();
+                    }
+                    addPageItem(totalPages);
+                }
+
+                // Show first page
+                showPage(currentPage);
+                updatePaginationUI();
             }
+
+            // Helper function to add a page item
+            function addPageItem(pageNumber) {
+                const pagination = document.getElementById('pagination');
+                const nextPage = document.getElementById('nextPage');
+
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item page-number ${pageNumber === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#">${pageNumber}</a>`;
+
+                pageItem.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    goToPage(parseInt(this.textContent));
+                });
+
+                nextPage.parentNode.insertBefore(pageItem, nextPage);
+            }
+
+            // Helper function to add ellipsis
+            function addEllipsis() {
+                const pagination = document.getElementById('pagination');
+                const nextPage = document.getElementById('nextPage');
+
+                const ellipsisItem = document.createElement('li');
+                ellipsisItem.className = 'page-item ellipsis';
+                ellipsisItem.innerHTML = '<span class="page-link">...</span>';
+
+                nextPage.parentNode.insertBefore(ellipsisItem, nextPage);
+            }
+
+            // Navigate to specific page
+            function goToPage(page) {
+                currentPage = page;
+                showPage(currentPage);
+                initPagination(); // Rebuild pagination controls
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Show specific page of cards
+            function showPage(page) {
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+                cards.forEach((card, index) => {
+                    if (index >= startIndex && index < endIndex) {
+                        card.style.display = 'block';
+                        // Trigger animation
+                        card.style.animationDelay = `${(index % itemsPerPage) * 0.1}s`;
+                        card.classList.add('animate__animated', 'animate__fadeIn');
+                    } else {
+                        card.style.display = 'none';
+                        card.classList.remove('animate__animated', 'animate__fadeIn');
+                    }
+                });
+            }
+
+            // Update pagination UI state
+            function updatePaginationUI() {
+                const prevPage = document.getElementById('prevPage');
+                const nextPage = document.getElementById('nextPage');
+
+                // Update prev/next buttons
+                prevPage.classList.toggle('disabled', currentPage === 1);
+                nextPage.classList.toggle('disabled', currentPage === totalPages);
+            }
+
+            // Initialize pagination
+            initPagination();
+
+            // Add event listeners for prev/next buttons
+            document.getElementById('prevPage').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    goToPage(currentPage - 1);
+                }
+            });
+
+            document.getElementById('nextPage').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    goToPage(currentPage + 1);
+                }
+            });
+
+            // Search functionality
+            const handleSearch = debounce(function() {
+                const searchValue = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    const name = card.querySelector('.patient-name').textContent.toLowerCase();
+                    const history = card.querySelector('.patient-history').textContent.toLowerCase();
+                    const isVisible = name.includes(searchValue) || history.includes(searchValue);
+
+                    if (isVisible) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                        // Trigger animation
+                        card.classList.add('animate__animated', 'animate__fadeIn');
+                    } else {
+                        card.style.display = 'none';
+                        card.classList.remove('animate__animated', 'animate__fadeIn');
+                    }
+                });
+
+                // Show/hide pagination based on search
+                document.querySelector('.pagination-container').style.display =
+                    searchValue === '' ? 'flex' : 'none';
+
+                // Show no results message if no matches
+                if (visibleCount === 0 && searchValue !== '') {
+                    document.getElementById('patientCards').insertAdjacentHTML('afterend', `
+                        <div class="no-results animate__animated animate__fadeIn">
+                            <i class="bi bi-search"></i>
+                            <h4 class="text-muted">No matching patients found</h4>
+                            <p class="text-muted">Try adjusting your search query</p>
+                        </div>
+                    `);
+                } else {
+                    const noResults = document.querySelector('.no-results');
+                    if (noResults) noResults.remove();
+                }
+            }, 300);
+
+            searchInput.addEventListener('input', handleSearch);
         });
-    }
 
-    // Success alert
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("deleted") === "true") {
-        Swal.fire({
-            title: 'Deleted!',
-            text: 'The patient has been deleted.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-        });
-    }
+        // Delete confirmation dialog
+        function confirmDelete(patientId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                background: 'white',
+                backdrop: `
+                    rgba(0,0,0,0.4)
+                    url("/images/nyan-cat.gif")
+                    left top
+                    no-repeat
+                `
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Patient/DeletePatient?id=${patientId}`;
+                }
+            });
+        }
 
-    // Debounce utility
-    function debounce(func, delay) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), delay);
-        };
-    }
+        // Debounce utility function
+        function debounce(func, delay) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
 
-    // Dynamic search
-    const handleSearch = debounce(function () {
-        const searchValue = this.value.toLowerCase().trim();
-        const cards = document.querySelectorAll(".patient-card");
-
-        cards.forEach(card => {
-            const name = card.querySelector(".patient-name").textContent.toLowerCase();
-            const history = card.querySelector(".patient-history").textContent.toLowerCase();
-            const isVisible = name.includes(searchValue) || history.includes(searchValue);
-
-            card.style.display = isVisible ? "block" : "none";
-        });
-    }, 300);
-
-    document.getElementById("searchInput").addEventListener("input", handleSearch);
-</script>
+        // Check for success message in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("deleted") === "true") {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Patient record has been deleted.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                background: 'white'
+            });
+        }
+    </script>
+</body>
+</html>

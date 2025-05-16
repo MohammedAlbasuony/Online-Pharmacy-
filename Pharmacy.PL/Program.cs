@@ -26,9 +26,7 @@ namespace Pharmacy.PL
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options=>
             {
-                options.SignIn.RequireConfirmedAccount = true;
                 options.SignIn.RequireConfirmedEmail = true;
-                options.SignIn.RequireConfirmedPhoneNumber = true;
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireDigit = true;

@@ -1,266 +1,663 @@
-﻿@using X.PagedList
-@using X.PagedList.Mvc.Core
-@model IPagedList<Pharmacy.DAL.Entity.Consultation>
+﻿@model List<Pharmacy.DAL.Entity.Consultation>
 
 @{
     ViewData["Title"] = "Consultations";
 }
 
-<!-- SweetAlert2 -->
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #74ebd5;
+            --secondary-color: #9face6;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --light-bg: #f8f9fc;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --card-shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
 
-<style>
-    /* Custom Styles */
-    .medicine-card {
-    border: none;
-    border-radius: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    opacity: 0.9;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            padding-bottom: 2rem;
+        }
 
-    .medicine-card:hover {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    opacity: 1;
-    }
+        /* Header Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
 
-    .card-title {
-    font-weight: 600;
-    font-size: 1.2rem;
-    transition: transform 0.3s ease, color 0.3s ease;
-    }
+        .page-title {
+            font-weight: 700;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
 
-    .medicine-card:hover .card-title {
-    transform: translateX(5px);
-    color: #0d6efd;
-    }
+            .page-title i {
+                margin-right: 12px;
+                font-size: 1.5rem;
+                color: var(--primary-color);
+            }
 
-    .card-body::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none; /* 👈 Add this line */
-    }
+        /* Search Box */
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
 
-    .medicine-card:hover .card-body::after {
-    opacity: 1;
-    }
+        .search-box {
+            border-radius: 50px;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
 
-    .btn-sm {
-    font-size: 0.85rem;
-    border-radius: 10px;
-    transition: background-color 0.3s ease;
-    }
+            .search-box:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+                outline: none;
+            }
 
-    .btn-sm:hover {
-    background-color: #0d6efd;
-    color: white;
-    }
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
 
-    .pagination .page-item .page-link {
-    border-radius: 10px;
-    font-size: 1.1rem;
-    padding: 0.75rem 1.25rem;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    }
+        /* Enhanced Card Styles */
+        .consultation-card .card {
+            border-radius: 12px;
+            border: none;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: var(--card-shadow);
+            background: white;
+            position: relative;
+            height: 100%;
+        }
 
-    .pagination .page-item:hover .page-link {
-    background-color: #0d6efd;
-    color: white;
-    transform: scale(1.1);
-    }
+            .consultation-card .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: var(--primary-color);
+                transition: all 0.3s ease;
+            }
 
-    .pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-    }
+            .consultation-card .card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--card-shadow-hover);
+            }
 
-    .pagination .page-item.disabled .page-link {
-    color: #6c757d;
-    }
+                .consultation-card .card:hover::before {
+                    width: 6px;
+                    background: var(--secondary-color);
+                }
 
-    .input-group input {
-    border-radius: 12px 0 0 12px;
-    }
+        .consultation-card .card-body {
+            padding: 1.5rem;
+        }
 
-    .input-group .btn {
-    border-radius: 0 12px 12px 0;
-    }
+        .consultation-card .card-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
 
-    .no-img {
-    height: 200px;
-    background-color: #f8f9fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #aaa;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    font-weight: 500;
-    }
-</style>
+        .consultation-card .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
 
-<div class="container mt-5">
-    @if (User.IsInRole("Doctor"))
-    {
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary fw-bold">@ViewData["Title"]</h2>
-            <a asp-action="Create" class="btn btn-success shadow-sm rounded-pill px-4">
-                <i class="bi bi-plus-lg"></i> New Consultation
-            </a>
-        </div>
-    }
-    <div class="mb-4 position-relative">
-        <input type="text" id="searchBox" class="form-control shadow-sm ps-5 py-3 rounded-pill" placeholder="Search consultations by name, date, type, or status..." />
-        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted fs-5"></i>
-    </div>
+        .consultation-card .card-footer {
+            background: rgba(248, 249, 252, 0.8);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+        }
 
+        /* Status Badges */
+        .badge-scheduled {
+            background-color: var(--warning-color);
+            color: #212529;
+        }
 
+        .badge-completed {
+            background-color: var(--secondary-color);
+            color: white;
+        }
 
-    @if (Model?.Any() == true)
-    {
-        <div class="row" id="consultation-list">
-            @foreach (var item in Model)
+        .badge-cancelled {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* No Results Styling */
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+            .no-results i {
+                font-size: 3rem;
+                color: #adb5bd;
+                margin-bottom: 1rem;
+            }
+
+        /* Enhanced Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination {
+            display: flex;
+            padding-left: 0;
+            list-style: none;
+            border-radius: 0.375rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .page-item {
+            margin: 0 3px;
+        }
+
+            .page-item:first-child, .page-item:last-child {
+                margin: 0 8px;
+            }
+
+        .page-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.75rem;
+            margin-left: -1px;
+            line-height: 1.25;
+            color: var(--primary-color);
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            min-width: 40px;
+            height: 40px;
+            border-radius: 8px !important;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+            .page-link:hover {
+                z-index: 2;
+                color: #fff;
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+            }
+
+        .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+        }
+
+        .page-item.disabled .page-link {
+            color: #b7b7b7;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .page-item.ellipsis .page-link {
+            pointer-events: none;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .page-item {
+                margin: 2px;
+            }
+
+            .page-link {
+                min-width: 36px;
+                height: 36px;
+                padding: 0.4rem 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .consultation-card .card-body {
+                padding: 1rem;
+            }
+
+            .consultation-card .card-footer {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Animation for cards */
+        .consultation-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        @@keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Button Styles */
+        .btn-add {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+        }
+
+            .btn-add:hover {
+                background-color: #17a673;
+                border-color: #17a673;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(28, 200, 138, 0.3);
+            }
+
+        .btn-outline-warning {
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+            transition: all 0.2s;
+        }
+
+            .btn-outline-warning:hover {
+                background-color: var(--warning-color);
+                color: white;
+            }
+
+        .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            transition: all 0.2s;
+        }
+
+            .btn-outline-danger:hover {
+                background-color: var(--danger-color);
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="container mt-4 animate__animated animate__fadeIn">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-calendar2-check-fill"></i> All Consultations
+            </h1>
+            @if (User.IsInRole("Doctor"))
             {
-                <div class="col-md-4 mb-4 consultation-item" data-patient-name="@item.PatientName">
-                    <div class="card medicine-card shadow-lg border-0 rounded-3 position-relative">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary fw-bold">@item.PatientName</h5>
-                            <p class="card-text text-muted">
-                                <strong>Date:</strong> @item.Date.ToString("MMM dd, yyyy")<br />
-                                <strong>Time:</strong> @item.Time.ToString(@"hh\:mm")<br />
-                                <strong>Type:</strong> @Html.DisplayFor(modelItem => item.Type)
-                            </p>
-                            <p class="card-text">
-                                <span class="badge @(item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Scheduled ? "bg-warning text-dark" : item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Completed ? "bg-success" : item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Cancelled ? "bg-danger" : "bg-secondary")">
-                                    @Html.DisplayFor(modelItem => item.Status)
-                                </span>
-                            </p>
+                <a asp-action="Create" class="btn btn-add shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> New Consultation
+                </a>
+            }
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-container animate__animated animate__fadeIn animate__delay-1s">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="searchInput" class="form-control search-box" placeholder="Search consultations by name, date, type, or status..." />
+        </div>
+
+        @if (Model?.Any() != true)
+        {
+            <div class="no-results animate__animated animate__fadeIn">
+                <i class="bi bi-emoji-frown"></i>
+                @if (User.IsInRole("Doctor"))
+                {
+                    <h4 class="text-muted">No consultations found</h4>
+                    <p class="text-muted">Try adding a new consultation or adjusting your search</p>
+                }
+                else
+                {
+                    <h4 class="text-muted">No consultations found</h4>
+                    <p class="text-muted">Try adjusting your search</p>
+                }
+            </div>
+        }
+        else
+        {
+            <div id="consultationCards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @{
+                    int delay = 0;
+                }
+                @foreach (var item in Model)
+                {
+                    <div class="col consultation-card" style="animation-delay: @(delay * 0.1 + "s")"
+                         data-patient-name="@item.PatientName"
+                         data-date="@item.Date.ToString("MMM dd, yyyy")"
+                         data-time="@item.Time.ToString(@"hh\:mm")"
+                         data-type="@item.Type"
+                         data-status="@item.Status">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
+                                        <i class="bi bi-person-fill text-primary"></i>
+                                    </div>
+                                    <h5 class="card-title consultation-patient mb-0">@item.PatientName</h5>
+                                </div>
+                                <div class="card-text">
+                                    <p class="text-muted mb-1"><i class="bi bi-calendar-date me-2"></i>@item.Date.ToString("MMM dd, yyyy")</p>
+                                    <p class="text-muted mb-1"><i class="bi bi-clock me-2"></i>@item.Time.ToString(@"hh\:mm")</p>
+                                    <p class="text-muted mb-2"><i class="bi bi-file-earmark-text me-2"></i>@item.Type</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge @(item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Scheduled ? "badge-scheduled" :
+                                                         item.Status == Pharmacy.DAL.Entity.ConsultationStatus.Completed ? "badge-completed" :
+                                                         "badge-cancelled") rounded-pill">
+                                            @item.Status
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                             @if (User.IsInRole("Doctor"))
                             {
-                                <div class="btn-group d-flex justify-content-between">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@item.Id)">Delete</button>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm">
+                                            <i class="bi bi-pencil me-1"></i> Edit
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete(@item.Id)">
+                                            <i class="bi bi-trash me-1"></i> Delete
+                                        </button>
+                                    </div>
                                 </div>
                             }
                         </div>
                     </div>
-                </div>
-            }
-        </div>
+                    delay++;
+                }
+            </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4">
-            <nav>
-                <ul class="pagination shadow-sm">
-                    <li class="page-item @(ViewBag.CurrentPage > 1 ? "" : "disabled")">
-                        <a class="page-link rounded-pill me-1" href="@Url.Action("GetAllPatients", new { page = ViewBag.CurrentPage - 1 })">
-                            <i class="bi bi-chevron-left"></i> Prev
-                        </a>
-                    </li>
-
-                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                    {
-                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                            <a class="page-link rounded-pill mx-1 @(i == ViewBag.CurrentPage ? "bg-primary text-white border-primary" : "")"
-                               href="@Url.Action("GetAllPatients", new { page = i })">@i</a>
+            <!-- Enhanced Pagination -->
+            <div class="pagination-container">
+                <nav aria-label="Consultation pagination">
+                    <ul class="pagination" id="pagination">
+                        <li class="page-item disabled" id="prevPage">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
                         </li>
+                        <!-- Pages will be inserted here by JavaScript -->
+                        <li class="page-item disabled" id="nextPage">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+                document.addEventListener('DOMContentLoaded', function () {
+            // Variables
+            const cards = document.querySelectorAll('.consultation-card');
+            const itemsPerPage = 12;
+            let currentPage = 1;
+            const maxVisiblePages = 5;
+            const searchInput = document.getElementById('searchInput');
+            let filteredCards = Array.from(cards);
+
+            function initPagination() {
+                const pagination = document.getElementById('pagination');
+                const prevPage = document.getElementById('prevPage');
+                const nextPage = document.getElementById('nextPage');
+
+                document.querySelectorAll('.page-number, .ellipsis').forEach(page => page.remove());
+
+                const totalItems = filteredCards.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                let startPage, endPage;
+                if (totalPages <= maxVisiblePages) {
+                    startPage = 1;
+                    endPage = totalPages;
+                } else {
+                    const maxPagesBeforeCurrent = Math.floor(maxVisiblePages / 2);
+                    const maxPagesAfterCurrent = Math.ceil(maxVisiblePages / 2) - 1;
+
+                    if (currentPage <= maxPagesBeforeCurrent) {
+                        startPage = 1;
+                        endPage = maxVisiblePages;
+                    } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+                        startPage = totalPages - maxVisiblePages + 1;
+                        endPage = totalPages;
+                    } else {
+                        startPage = currentPage - maxPagesBeforeCurrent;
+                        endPage = currentPage + maxPagesAfterCurrent;
                     }
+                }
 
-                    <li class="page-item @(ViewBag.CurrentPage < ViewBag.TotalPages ? "" : "disabled")">
-                        <a class="page-link rounded-pill ms-1" href="@Url.Action("GetAllPatients", new { page = ViewBag.CurrentPage + 1 })">
-                            Next <i class="bi bi-chevron-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+                if (startPage > 1) {
+                    addPageItem(1);
+                    if (startPage > 2) addEllipsis();
+                }
 
+                for (let i = startPage; i <= endPage; i++) {
+                    addPageItem(i, totalPages);
+                }
 
-    }
-    else
-    @if (User.IsInRole("Doctor"))
-    {
-        <div class="alert alert-info text-center mt-5 shadow-sm">
-            No consultations found. Click <strong>"New Consultation"</strong> to get started.
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info text-center mt-5 shadow-sm">
-            No consultations found.
-        </div>
-    }
-</div>
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) addEllipsis();
+                    addPageItem(totalPages, totalPages);
+                }
 
-<!-- Required JS -->
-<script>
-    function confirmDelete(itemId) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This consultation will be permanently deleted!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Submit form via POST
-                const form = document.createElement('form');
-                form.method = 'post';
-                form.action = '@Url.Action("Delete", "Consultation")' + '?id=' + itemId;
-
-                // Add anti-forgery token
-                const tokenInput = document.createElement('input');
-                tokenInput.type = 'hidden';
-                tokenInput.name = '__RequestVerificationToken';
-                tokenInput.value = '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)[1];
-
-                form.appendChild(tokenInput);
-                document.body.appendChild(form);
-                form.submit();
+                showPage(currentPage, filteredCards);
+                updatePaginationUI(totalPages);
             }
-        });
-    }
 
-    @if (TempData["DeleteSuccess"] != null)
-    {
-        <text>
+            function addPageItem(pageNumber, totalPages) {
+                const nextPage = document.getElementById('nextPage');
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item page-number ${pageNumber === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#">${pageNumber}</a>`;
+                pageItem.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    currentPage = pageNumber;
+                    showPage(currentPage, filteredCards);
+                    initPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                nextPage.parentNode.insertBefore(pageItem, nextPage);
+            }
+
+            function addEllipsis() {
+                const nextPage = document.getElementById('nextPage');
+                const ellipsisItem = document.createElement('li');
+                ellipsisItem.className = 'page-item ellipsis';
+                ellipsisItem.innerHTML = '<span class="page-link">...</span>';
+                nextPage.parentNode.insertBefore(ellipsisItem, nextPage);
+            }
+
+            function showPage(page, list) {
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, list.length);
+
+                cards.forEach(card => card.style.display = 'none');
+
+                list.forEach((card, index) => {
+                    if (index >= startIndex && index < endIndex) {
+                        card.style.display = 'block';
+                        card.style.animationDelay = `${(index % itemsPerPage) * 0.05}s`;
+                        card.classList.add('animate__animated', 'animate__fadeIn');
+                    } else {
+                        card.classList.remove('animate__animated', 'animate__fadeIn');
+                    }
+                });
+            }
+
+            function updatePaginationUI(totalPages) {
+                const prevPage = document.getElementById('prevPage');
+                const nextPage = document.getElementById('nextPage');
+                prevPage.classList.toggle('disabled', currentPage === 1);
+                nextPage.classList.toggle('disabled', currentPage === totalPages);
+            }
+
+            document.getElementById('prevPage').addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    showPage(currentPage, filteredCards);
+                    initPagination();
+                }
+            });
+
+            document.getElementById('nextPage').addEventListener('click', function (e) {
+                e.preventDefault();
+                const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    showPage(currentPage, filteredCards);
+                    initPagination();
+                }
+            });
+
+            function debounce(func, wait) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            const handleSearch = debounce(function () {
+                const query = this.value.toLowerCase().trim();
+                filteredCards = Array.from(cards).filter(card => {
+                    const name = card.dataset.patientName?.toLowerCase() || '';
+                    const date = card.dataset.date?.toLowerCase() || '';
+                    const time = card.dataset.time?.toLowerCase() || '';
+                    const type = card.dataset.type?.toLowerCase() || '';
+                    const status = card.dataset.status?.toLowerCase() || '';
+                    return name.includes(query) || date.includes(query) || time.includes(query) || type.includes(query) || status.includes(query);
+                });
+
+                const noResultsElement = document.querySelector('.no-results');
+                if (noResultsElement) noResultsElement.remove();
+
+                if (filteredCards.length === 0 && query !== '') {
+                    document.getElementById('consultationCards').insertAdjacentHTML('afterend', `
+                        <div class="no-results animate__animated animate__fadeIn text-center mt-4">
+                            <i class="bi bi-search fs-1 text-muted"></i>
+                            <h4 class="text-muted">No matching consultations found</h4>
+                            <p class="text-muted">Try adjusting your search query</p>
+                        </div>
+                    `);
+                    document.querySelector('.pagination-container').style.display = 'none';
+                } else {
+                    document.querySelector('.pagination-container').style.display = 'flex';
+                }
+
+                currentPage = 1;
+                initPagination();
+            }, 300);
+
+            searchInput.addEventListener('input', handleSearch);
+
+            // Initial render
+            initPagination();
+        });
+
+        // Delete confirmation dialog
+        function confirmDelete(consultationId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This consultation will be permanently deleted!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                background: 'white'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit form via POST
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '@Url.Action("Delete", "Consultation")' + '?id=' + consultationId;
+
+                    // Add anti-forgery token
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)[1];
+
+                    form.appendChild(tokenInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        // Debounce utility function
+        function debounce(func, delay) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        @if (TempData["DeleteSuccess"] != null)
+        {
+            <text>
                 Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
                     text: '@TempData["DeleteSuccess"]',
                     timer: 2500,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    background: 'white'
                 });
-        </text>
-    }
-
-    document.getElementById("searchBox").addEventListener("input", function () {
-        const searchTerm = this.value.toLowerCase();
-        const cards = document.querySelectorAll(".medicine-card");
-
-        cards.forEach(card => {
-            const name = card.querySelector(".card-title")?.textContent.toLowerCase() || "";
-            const date = card.querySelector(".card-text")?.innerText.match(/Date:\s*(.+)/i)?.[1]?.toLowerCase() || "";
-            const type = card.querySelector(".card-text")?.innerText.match(/Type:\s*(.+)/i)?.[1]?.toLowerCase() || "";
-            const status = card.querySelector(".badge")?.textContent.toLowerCase() || "";
-
-            const match = [name, date, type, status].some(field => field.includes(searchTerm));
-            card.parentElement.style.display = match ? "block" : "none";
-        });
-    });
-
-</script>
+            </text>
+        }
+    </script>
+</body>
+</html>

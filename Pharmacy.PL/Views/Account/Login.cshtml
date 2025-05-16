@@ -1,6 +1,6 @@
 ﻿@using Pharmacy.PL.ViewModels
 @model LoginVm
-
+@* @Html.ValidationSummary(false, "", new { @class = "text-danger" }) *@
 @{
     ViewData["Title"] = "Login";
     ViewData["BodyClass"] = "login-page";
@@ -249,6 +249,8 @@
                             }
 
                             <form asp-action="Login" asp-controller="Account" method="post">
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger text-center mb-3 small animate__animated animate__fadeIn" })
+
                                 <div class="mb-4 animate__animated animate__fadeIn animate__delay-1s">
                                     <label asp-for="Email" class="form-label">Email</label>
                                     <div class="input-group">
@@ -263,7 +265,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                         <input asp-for="Password" class="form-control" placeholder="********" />
-                                        <button class="btn btn-outline-light toggle-password" type="button">
+                                        <button class="btn btn-outline toggle-password" type="button">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
