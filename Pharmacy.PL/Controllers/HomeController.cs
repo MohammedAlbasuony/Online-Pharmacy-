@@ -33,7 +33,10 @@ namespace Pharmacy.PL.Controllers
 
             return View(stats);
         }
-
+        public IActionResult PowerBI()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();
