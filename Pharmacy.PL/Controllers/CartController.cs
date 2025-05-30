@@ -212,7 +212,6 @@ public class CartController : Controller
 
         return View(orderViewModel);
     }
-
     [HttpPost]
     public async Task<IActionResult> ConfirmAndPay(int orderId)
     {
@@ -225,8 +224,10 @@ public class CartController : Controller
         if (patient == null)
             return BadRequest("Patient not found.");
 
-        // Get the most recent order for the patient
+        // Get the order with its items and related products
         var order = await _context.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Medicine) // adjust navigation property names as per your model
             .FirstOrDefaultAsync(o => o.PatientID == patient.PatientID && o.OrderID == orderId);
 
         if (order == null)
@@ -234,12 +235,27 @@ public class CartController : Controller
 
         // Update the order status to "Paid"
         order.Status = "Paid";
+
+        // Update stock quantities
+        foreach (var item in order.OrderItems)
+        {
+            if (item.Medicine.StockQuantity < item.Quantity)
+            {
+                TempData["Error"] = $"Not enough stock for product: {item.Medicine.Name}";
+                return RedirectToAction("Index", "Cart");
+            }
+
+            item.Medicine.StockQuantity -= item.Quantity;
+            _context.Medicines.Update(item.Medicine); 
+        }
+
         _context.Orders.Update(order);
         await _context.SaveChangesAsync();
 
         TempData["Success"] = "Payment successful. Your order is now paid!";
         return RedirectToAction("OrderConfirmation", new { orderId = order.OrderID });
     }
+
     // Increase the quantity of the item in the cart
     public IActionResult IncreaseQuantity(int medicationId)
     {
